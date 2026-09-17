@@ -10,10 +10,10 @@
   "homepage": "https://smmh.dev/claudestream/",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/smm-h/claudestream.git"
+    "url": "git+https://github.com/stricttools/claudestream.git"
   },
   "bugs": {
-    "url": "https://github.com/smm-h/claudestream/issues"
+    "url": "https://github.com/stricttools/claudestream/issues"
   },
   "keywords": [
     "claude",
