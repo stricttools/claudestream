@@ -31,7 +31,7 @@ requires-dist = [
     { name = "msgspec" },
     { name = "selfdoc" },
     { name = "strictcli", specifier = ">=0.41.0" },
-    { name = "strictspec", specifier = ">=0.2.1" },
+    { name = "strictspec", specifier = ">=0.4.0" },
 ]
 
 [package.metadata.requires-dev]
@@ -200,14 +200,14 @@ wheels = [
 
 [[package]]
 name = "strictspec"
-version = "0.2.1"
+version = "0.4.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "tomlkit" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/4d/d6/3f350db3c04aa643ffc171659400e41e5fc3aeecbd098c75c728a5652b59/strictspec-0.2.1.tar.gz", hash = "sha256:59db55859a66fbdb34a6e19ca673cf9307c2f8d4477bfe12dbd59ae64c644b79", size = 74958, upload-time = "2026-08-17T17:24:05.966Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b8/ea/ceddc2a2e4ac58a1c8ed3aa06ab5c13aaa189112c686c7218f0fd474917e/strictspec-0.4.0.tar.gz", hash = "sha256:33acab82d705401645e1cc44789db46fc1ce9d99af07d69c01338e1203952459", size = 76935, upload-time = "2026-09-24T17:29:12.141Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/aa/87/62a8e2331ff73c5e59fab56f29e766f8e379d3a725934ea93ccbb43b6a7a/strictspec-0.2.1-py3-none-any.whl", hash = "sha256:41f6a3e1b0866f46ab4b43a4920ac16b3f255c914ca53813f62b029decb39ab5", size = 52596, upload-time = "2026-08-17T17:24:04.712Z" },
+    { url = "https://files.pythonhosted.org/packages/a3/5e/60adecc7d2b3d438f7443c323d4c632f6b9a137d3264ec8683cca9850000/strictspec-0.4.0-py3-none-any.whl", hash = "sha256:ed05ed98caf71100011376c2e48a183dd59acc1ed65192209701d44fdd1f3c59", size = 53334, upload-time = "2026-09-24T17:29:10.648Z" },
 ]
 
 [[package]]

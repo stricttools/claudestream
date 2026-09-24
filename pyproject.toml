@@ -30,7 +30,7 @@ dependencies = [
     # version that does not exist yet would only make this package
     # unresolvable, so the floor waits for that release.
     "claudewheel",
-    "strictspec>=0.2.1",
+    "strictspec>=0.4.0",
 ]
 keywords = [
     "claude",
