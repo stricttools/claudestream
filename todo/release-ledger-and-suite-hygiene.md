@@ -28,9 +28,9 @@ coverage check passes without archaeology.
 
 Effort: trivial.
 
-## 3. Revisit stricttest sandbox-runner adoption
+## 3. Revisit testisolation sandbox-runner adoption
 
-`stricttest_sandbox_required` is set to `"false"` with an in-file comment
+`testisolation_sandbox_required` is set to `"false"` with an in-file comment
 marking it as pending the sandbox runner. The suite's spend-guard architecture
 has since stabilized; revisit whether the sandboxed runner can now be adopted
 and the stance flipped.
