@@ -69,7 +69,7 @@ markers = [
     "slow: tests that take >10s (e.g. subprocess liveness probes)",
 ]
 
-# The stricttest isolation floor. Installing the plugin IS adoption of the
+# The testisolation isolation floor. Installing the plugin IS adoption of the
 # floor, and no key has an implicit default -- a missing one aborts the session
 # at configure time -- so all five stances are declared explicitly.
 #
@@ -77,17 +77,17 @@ markers = [
 # over sockets: the replay lane drives tests/fixtures/claude_vcr.py through
 # stdin/stdout, and the live lane (which does reach the network, through the
 # claude binary) is a separate opt-in process that is skipped here.
-stricttest_sockets = "deny"
-stricttest_socket_allowlist = []
-stricttest_unix_socket_allowlist = []
-stricttest_loopback = "deny"
+testisolation_sockets = "deny"
+testisolation_socket_allowlist = []
+testisolation_unix_socket_allowlist = []
+testisolation_loopback = "deny"
 # No sandbox runner in this repo yet; the bwrap runner ships as an rlsbl
 # scaffold template. Flip to "true" at adoption.
-stricttest_sandbox_required = "false"
+testisolation_sandbox_required = "false"
 
 [dependency-groups]
 dev = [
     "pytest",
     "pytest-timeout>=2.4.0",
-    "stricttest>=0.2.0",
+    "testisolation>=0.3.0",
 ]
