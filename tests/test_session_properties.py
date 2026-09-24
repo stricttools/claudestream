@@ -1,4 +1,4 @@
-"""Tests for session observability properties (Phase 6.2/6.3)."""
+"""Tests for session observability properties."""
 
 import asyncio
 import json
@@ -226,7 +226,7 @@ class TestSyncSessionStderrLines:
 
 
 # ---------------------------------------------------------------------------
-# SyncSession delegate properties (12 missing properties added in Phase 4)
+# SyncSession delegate properties
 # ---------------------------------------------------------------------------
 
 
