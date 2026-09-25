@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import inspect
 import logging
 import random
 import time
@@ -1038,7 +1039,7 @@ class AsyncSession:
                         for inject_param in matched_tool.inject:
                             arguments[inject_param] = tool_context
 
-                    if asyncio.iscoroutinefunction(handler):
+                    if inspect.iscoroutinefunction(handler):
                         result = await handler(**arguments)
                     else:
                         result = handler(**arguments)
@@ -1283,7 +1284,7 @@ class AsyncSession:
         """Fire a list of hooks with the given arguments, logging and swallowing errors."""
         for hook in hooks:
             try:
-                if asyncio.iscoroutinefunction(hook):
+                if inspect.iscoroutinefunction(hook):
                     await hook(*args)
                 else:
                     hook(*args)
