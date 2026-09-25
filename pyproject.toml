@@ -3,7 +3,7 @@ name = "claudestream"
 version = "0.15.3"
 description = "Drive Claude Code from Python: run it as a subprocess and read its output as typed events, with async and sync sessions, sandbox policies, and tools you define in Python"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.14"
 license = "MIT"
 authors = [{name = "SMM-H", email = "lisa.codi@veliu.com"}]
 dependencies = [
@@ -16,10 +16,8 @@ dependencies = [
     "msgspec",
     # selfdoc is not imported anywhere in this package. It is the docs
     # generator, invoked as a binary by .rlsbl/hooks/post-release.sh, and it
-    # constrains resolution here for no runtime reason (its current release
-    # requires Python >=3.12 while this package supports >=3.11, which is why
-    # the lock carries a marker split). It stays declared and unfloored until
-    # its place in this manifest is decided.
+    # constrains resolution here for no runtime reason. It stays declared and
+    # unfloored until its place in this manifest is decided.
     "selfdoc",
     # Unfloored deliberately. claudestream imports exactly one thing from
     # claudewheel -- claudewheel.profile.resolve_profile -- and that module

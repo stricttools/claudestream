@@ -14,7 +14,7 @@ claudestream wraps the `claude` CLI's `--output-format stream-json` / `--input-f
 uv add claudestream
 ```
 
-Requires Python 3.11+ and `claude` CLI installed and authenticated.
+Requires Python 3.14+ and `claude` CLI installed and authenticated.
 
 ## Quick Start
 
