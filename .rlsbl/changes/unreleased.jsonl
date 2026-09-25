@@ -2,3 +2,4 @@
 {"format_version":1,"id":"18d84ce989e2840c1c24f3408bca4a5a8570fbe28c4be9e4","commits":["a96e6da20483af312e5ec25b82ed88ec382ebda1"],"user_facing":false}
 {"format_version":1,"id":"18d850b363efd8a01961063b79e9442590990f23606e5de4","commits":["9ebc3a23d8b056b8511dbb242ca3b0bcd906724f"],"user_facing":false}
 {"format_version":1,"id":"18d8523bb0b67120d9607d3fc3e6466cb3b9b03089cc1c3e","commits":["ee35488054e8a1b931a5d850adfebd7a1fa54af9"],"user_facing":false}
+{"format_version":1,"id":"18d89d08ab19b1a5736ebb6bca87450ca35454b8923a8b88","commits":["be68e5f741250a5fb01623761281d9d219962a26"],"user_facing":true,"description":"**Python 3.14 required.** claudestream now declares `requires-python >=3.14`; installers on Python 3.11 to 3.13 can no longer install new versions.","type":"breaking"}
