@@ -50,9 +50,9 @@ classifiers = [
 [project.urls]
 Homepage = "https://smmh.dev/claudestream/"
 Documentation = "https://smmh.dev/claudestream/"
-Repository = "https://github.com/smm-h/claudestream"
-Issues = "https://github.com/smm-h/claudestream/issues"
-Changelog = "https://github.com/smm-h/claudestream/blob/main/CHANGELOG.md"
+Repository = "https://github.com/stricttools/claudestream"
+Issues = "https://github.com/stricttools/claudestream/issues"
+Changelog = "https://github.com/stricttools/claudestream/blob/main/CHANGELOG.md"
 
 [project.scripts]
 claudestream = "claudestream._cli:main"
