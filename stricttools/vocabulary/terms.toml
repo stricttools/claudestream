@@ -1,1 +1,5 @@
 format_version = 1
+
+[[accepted]]
+word = "claudestream"
+meaning = "This project: a Python SDK that wraps the Claude Code CLI's stream-json protocol in layered process, protocol, and session APIs."
