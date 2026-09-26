@@ -7,3 +7,7 @@ meaning = "This project: a Python SDK that wraps the Claude Code CLI's stream-js
 [[accepted]]
 word = "claudewheel"
 meaning = "A separate tool that manages Claude Code profiles (config directories with credentials and settings); claudestream's --profile flag selects one."
+
+[[accepted]]
+word = "rlsbl"
+meaning = "The release orchestration tool this project uses to scaffold, preview, and run releases."
