@@ -9,9 +9,5 @@ word = "claudewheel"
 meaning = "A separate tool that manages Claude Code profiles (config directories with credentials and settings); claudestream's --profile flag selects one."
 
 [[accepted]]
-word = "rlsbl"
-meaning = "The release orchestration tool this project uses to scaffold, preview, and run releases."
-
-[[accepted]]
 word = "strictspec"
 meaning = "The schema language and validator used to define and check the agent definition document format."
