@@ -199,7 +199,7 @@ protocol version, and the live lane is what notices the world moved.
 
 ## Release workflow
 
-This project uses [rlsbl](https://github.com/smm-h/rlsbl) for release orchestration.
+This project uses [rlsbl](https://github.com/stricttools/rlsbl) for release orchestration.
 
 - Update CHANGELOG.md with a `## X.Y.Z` entry describing changes
 - Run `rlsbl release init` to scaffold the release file, set the bump type, then `rlsbl release run`

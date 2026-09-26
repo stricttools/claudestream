@@ -1,7 +1,7 @@
 {
   "version": "0.15.3",
   "description": "Drive Claude Code from Python: run it as a subprocess and read its output as typed events, with async and sync sessions, sandbox policies, and tools you define in Python",
-  "repo": "https://github.com/smm-h/claudestream",
+  "repo": "https://github.com/stricttools/claudestream",
   "source": [
     {
       "path": "claudestream",
