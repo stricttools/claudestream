@@ -3,3 +3,7 @@ format_version = 1
 [[accepted]]
 word = "claudestream"
 meaning = "This project: a Python SDK that wraps the Claude Code CLI's stream-json protocol in layered process, protocol, and session APIs."
+
+[[accepted]]
+word = "claudewheel"
+meaning = "A separate tool that manages Claude Code profiles (config directories with credentials and settings); claudestream's --profile flag selects one."
