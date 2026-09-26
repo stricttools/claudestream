@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "name": "claudestream",
   "slug": "claudestream",
   "version": "0.15.2",
@@ -3217,5 +3217,9 @@
   ],
   "posts": [],
   "last_gen": "2026-09-15T20:47:26.761414+00:00",
-  "theme": "minimal"
+  "theme": "minimal",
+  "vocabulary": {
+    "accepted": [],
+    "rejected": []
+  }
 }
