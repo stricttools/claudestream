@@ -214,7 +214,7 @@ with SyncSession(config) as session:
 | `msgspec` | * |
 | `selfdoc` | * |
 | `claudewheel` | * |
-| `strictspec` | >=0.2.1 |
+| `strictspec` | >=0.4.0 |
 
 ## Modules
 

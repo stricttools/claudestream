@@ -2,7 +2,7 @@
   "schema_version": 2,
   "name": "claudestream",
   "slug": "claudestream",
-  "version": "0.15.2",
+  "version": "0.15.3",
   "description": "Drive Claude Code from Python: run it as a subprocess and read its output as typed events, with async and sync sessions, sandbox policies, and tools you define in Python",
   "language": "python",
   "base_url": "https://smmh.dev/claudestream",
@@ -3216,10 +3216,23 @@
     }
   ],
   "posts": [],
-  "last_gen": "2026-09-15T20:47:26.761414+00:00",
+  "last_gen": "2026-09-30T16:34:09.154380+00:00",
   "theme": "minimal",
   "vocabulary": {
-    "accepted": [],
+    "accepted": [
+      {
+        "word": "claudestream",
+        "aliases": []
+      },
+      {
+        "word": "claudewheel",
+        "aliases": []
+      },
+      {
+        "word": "strictspec",
+        "aliases": []
+      }
+    ],
     "rejected": []
   }
 }
