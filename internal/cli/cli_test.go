@@ -145,8 +145,8 @@ func TestEventsCopiesTheRawLines(t *testing.T) {
 
 func TestPromptFromStdin(t *testing.T) {
 	h := newHarness(t, successfulTurn()...)
-	args := append([]string{"ask", "--model", "haiku", "--profile", "work", "--new-session", "--no-skip-permissions",
-		"--claude-binary", h.claude, "--claudewheel-binary", h.claudewheel, "--prompt-from-stdin", "--no-footer"})
+	args := []string{"ask", "--model", "haiku", "--profile", "work", "--new-session", "--no-skip-permissions",
+		"--claude-binary", h.claude, "--claudewheel-binary", h.claudewheel, "--prompt-from-stdin", "--no-footer"}
 	if out, errOut, code := h.run("  ping\n", args...); code != 0 || out != "pong\n" {
 		t.Fatalf("exit %d\nstdout %q\nstderr %q", code, out, errOut)
 	}
