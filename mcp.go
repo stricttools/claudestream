@@ -141,7 +141,7 @@ func (s *Session) handleMCPMessage(req controlRequest) {
 
 	switch rpc.Method {
 	case mcpMethodInitialize:
-		s.answerMCP(req, mcpInitialize(msg))
+		s.answerMCP(req, mcpInitialize(msg), nil)
 	case mcpMethodInitialized:
 		// A notification has no ID, but the control request still needs an
 		// answer; it carries ID 0, as Claude Code accepts.
@@ -149,7 +149,7 @@ func (s *Session) handleMCPMessage(req controlRequest) {
 		if isJSONNull(id) {
 			id = json.RawMessage("0")
 		}
-		s.answerMCP(req, newJSONRPCResult(id, map[string]any{}))
+		s.answerMCP(req, newJSONRPCResult(id, map[string]any{}), nil)
 	case mcpMethodToolsList:
 		listings := make([]mcpToolListing, 0, len(tools))
 		for _, t := range tools {
@@ -160,9 +160,9 @@ func (s *Session) handleMCPMessage(req controlRequest) {
 				Meta:        mcpToolMeta{Anthropic: mcpAnthropicMeta{AlwaysLoad: true}},
 			})
 		}
-		if s.answerMCP(req, newJSONRPCResult(rpc.ID, mcpToolsListResult{Tools: listings})) {
+		s.answerMCP(req, newJSONRPCResult(rpc.ID, mcpToolsListResult{Tools: listings}), func() {
 			s.mcp.markListed(msg.ServerName)
-		}
+		})
 	case mcpMethodToolsCall:
 		s.startToolCall(req, msg, tools)
 	default:
@@ -196,7 +196,8 @@ func mcpInitialize(msg mcpMessage) jsonRPCResponse {
 }
 
 // startToolCall validates a tools/call and runs the tool's handler in its
-// own goroutine, which queues the SDKToolCall and then sends the answer.
+// own goroutine, which queues the SDKToolCall and then hands the answer to
+// the stdin writer.
 // The event is queued first so it precedes the turn's Result, which Claude
 // Code can only send after it has the answer.
 func (s *Session) startToolCall(req controlRequest, msg mcpMessage, tools []Tool) {
@@ -206,17 +207,17 @@ func (s *Session) startToolCall(req controlRequest, msg mcpMessage, tools []Tool
 		Arguments json.RawMessage `json:"arguments"`
 	}
 	if isJSONNull(rpc.Params) {
-		s.answerMCP(req, newJSONRPCError(rpc.ID, jsonRPCInvalidParams, "tools/call without params"))
+		s.answerMCP(req, newJSONRPCError(rpc.ID, jsonRPCInvalidParams, "tools/call without params"), nil)
 		return
 	}
 	if err := json.Unmarshal(rpc.Params, &params); err != nil {
-		s.answerMCP(req, newJSONRPCError(rpc.ID, jsonRPCInvalidParams, fmt.Sprintf("invalid tools/call params: %v", err)))
+		s.answerMCP(req, newJSONRPCError(rpc.ID, jsonRPCInvalidParams, fmt.Sprintf("invalid tools/call params: %v", err)), nil)
 		return
 	}
 	i := slices.IndexFunc(tools, func(t Tool) bool { return t.Name == params.Name })
 	if i < 0 {
 		s.answerMCP(req, newJSONRPCError(rpc.ID, jsonRPCInvalidParams,
-			fmt.Sprintf("SDK MCP server %q has no tool %q", msg.ServerName, params.Name)))
+			fmt.Sprintf("SDK MCP server %q has no tool %q", msg.ServerName, params.Name)), nil)
 		return
 	}
 	tool := tools[i]
@@ -241,26 +242,22 @@ func (s *Session) startToolCall(req controlRequest, msg mcpMessage, tools []Tool
 			call.Output = handlerErr.Error()
 		}
 		s.queue.push(queueItem{event: call})
-		s.answerMCP(req, newJSONRPCResult(rpc.ID, newMCPToolCallResult(call.Output, call.IsError)))
+		s.answerMCP(req, newJSONRPCResult(rpc.ID, newMCPToolCallResult(call.Output, call.IsError)), nil)
 	}()
 }
 
-// answerMCP sends a JSON-RPC response to an mcp_message request and reports
-// whether it was sent; a failure is queued for the turn.
-func (s *Session) answerMCP(req controlRequest, response jsonRPCResponse) bool {
-	if err := s.writeFrame(s.lifeCtx, newMCPResponse(req.requestID, response)); err != nil {
-		s.pushAnswerFailure(req, err)
-		return false
-	}
-	return true
+// answerMCP hands a JSON-RPC response to an mcp_message request to the
+// stdin writer without waiting; written, when set, runs once it is out, and
+// a failure is queued for the turn.
+func (s *Session) answerMCP(req controlRequest, response jsonRPCResponse, written func()) {
+	s.enqueueAnswer(req, newMCPResponse(req.requestID, response), written)
 }
 
 // refuseMCP answers an mcp_message the SDK MCP servers do not handle with a
 // JSON-RPC error and queues an UnknownControlRequest.
 func (s *Session) refuseMCP(req controlRequest, response jsonRPCResponse) {
-	if s.answerMCP(req, response) {
-		s.queue.push(queueItem{event: req.unknownControlRequest()})
-	}
+	s.queue.push(queueItem{event: req.unknownControlRequest()})
+	s.answerMCP(req, response, nil)
 }
 
 // isJSONNull reports whether raw is absent or JSON null.

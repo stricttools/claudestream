@@ -29,6 +29,13 @@ const stdoutReadBuffer = 64 << 10
 // it never waits for the consumer. Events that arrive between turns are
 // delivered at the start of the next turn.
 //
+// Another goroutine is the only writer of the subprocess's stdin: user
+// messages, control requests, answers to permission and dialog requests, the
+// reader's automatic answers, and tool-call replies are all written by it,
+// in the order they were submitted. The reader hands its answers over
+// without waiting, so a subprocess that stops reading stdin cannot stall the
+// reading of stdout.
+//
 // The methods are safe for concurrent use, except that a Turn's Next must
 // not be called from more than one goroutine at a time.
 type Session struct {
@@ -40,15 +47,14 @@ type Session struct {
 	// tracker is used by the reader goroutine only.
 	tracker *eventTracker
 
-	// lifeCtx ends when Close starts. The reader's own stdin writes and the
+	// lifeCtx ends when Close starts. The reader's automatic answers and the
 	// tool handlers run under it.
 	lifeCtx    context.Context
 	endLife    context.CancelFunc
 	readerDone chan struct{}
 	handlers   sync.WaitGroup
-	// stdinLock serializes stdin writes; a channel so waiting for it can end
-	// with a context.
-	stdinLock chan struct{}
+	// stdin is the writer goroutine every stdin frame goes through.
+	stdin *stdinWriter
 
 	closeOnce sync.Once
 	closeErr  error
@@ -56,7 +62,6 @@ type Session struct {
 	mu            sync.Mutex
 	closed        bool
 	unusable      bool
-	stdinBroken   bool
 	exitErr       error
 	turnActive    bool
 	turnEndQueued bool
@@ -109,12 +114,13 @@ func Start(ctx context.Context, cfg Config) (*Session, error) {
 		lifeCtx:       lifeCtx,
 		endLife:       endLife,
 		readerDone:    make(chan struct{}),
-		stdinLock:     make(chan struct{}, 1),
 		outstanding:   map[string]string{},
 		budget:        newBudgetTracker(cfg.Budget),
 		filesModified: map[string]bool{},
 		claudeVersion: version,
 	}
+	s.stdin = newStdinWriter(proc.stdin, s.markStdinBroken)
+	go s.stdin.run()
 	go s.readLoop(limits.LineLimit)
 
 	if err := s.handshake(ctx); err != nil {
@@ -146,6 +152,8 @@ func (s *Session) handshake(ctx context.Context) error {
 		return nil
 	case <-s.readerDone:
 		return fmt.Errorf("waiting for Claude Code to list the SDK MCP servers' tools: %w", s.exitError())
+	case <-s.stdin.failed:
+		return fmt.Errorf("waiting for Claude Code to list the SDK MCP servers' tools: %w", s.stdin.failureErr())
 	case <-ctx.Done():
 		return fmt.Errorf("waiting for Claude Code to list the SDK MCP servers' tools: %w", ctx.Err())
 	}
@@ -256,6 +264,14 @@ func (t *Turn) fail() {
 	t.s.endTurn(true)
 }
 
+// markStdinBroken makes the session unusable after a write failure left
+// stdin unusable; the writer goroutine calls it.
+func (s *Session) markStdinBroken() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.unusable = true
+}
+
 func (s *Session) endTurn(unusable bool) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -266,20 +282,30 @@ func (s *Session) endTurn(unusable bool) {
 }
 
 // Close stops Claude Code (close stdin, wait the shutdown timeout, SIGTERM,
-// wait again, SIGKILL), ends the reader and the tool handlers' context, and
-// fails every pending control request with ErrSessionClosed. It returns
-// what went wrong while stopping, and the same on every later call.
+// wait again, SIGKILL), ends the reader, the stdin writer, and the tool
+// handlers' context, and fails every pending control request with
+// ErrSessionClosed. Frames still waiting to be written fail with
+// ErrSessionClosed; none is dropped unanswered. It returns what went wrong
+// while stopping, and the same on every later call.
 func (s *Session) Close() error {
 	s.closeOnce.Do(func() {
 		s.mu.Lock()
 		s.closed = true
 		s.mu.Unlock()
+		// Ends the tool handlers' context and interrupts an automatic answer
+		// being written.
 		s.endLife()
+		// The writer fails every queued frame and refuses new ones; its
+		// goroutine returns once the write in progress, if any, has ended.
+		s.stdin.stop()
 
 		var errs []error
+		// Closing stdin interrupts a write still in progress, so the writer
+		// goroutine is gone once shutdown returns.
 		if err := s.proc.shutdown(); err != nil {
 			errs = append(errs, err)
 		}
+		<-s.stdin.exited
 		// The reader drains what the process wrote before it exited; a
 		// descendant holding stdout open must not keep Close waiting.
 		waitClosed(s.readerDone, s.proc.shutdownTimeout)
@@ -458,16 +484,16 @@ func (s *Session) handleControlRequest(req controlRequest) {
 		if decision.Allowed {
 			answer = newAllowResponse(req.requestID, request.ToolInput, nil)
 		}
-		if err := s.writeFrame(s.lifeCtx, answer); err != nil {
-			s.pushAnswerFailure(req, err)
-			return
-		}
+		// The event is queued before the answer is handed to the writer, so
+		// it keeps its place among the reader's events and a failure to
+		// write the answer follows it as an error.
 		s.queue.push(queueItem{event: PermissionDecided{
 			EventHeader: request.EventHeader,
 			Request:     request,
 			Allowed:     decision.Allowed,
 			Message:     decision.Message,
 		}})
+		s.enqueueAnswer(req, answer, nil)
 	case controlSubtypeRequestUserDialog:
 		request, err := req.userDialogRequest()
 		if err != nil {
@@ -494,26 +520,21 @@ func (s *Session) forwardRequest(req controlRequest, ev Event) {
 // refuseUnhandled answers a request with an error response and queues an
 // UnknownControlRequest.
 func (s *Session) refuseUnhandled(req controlRequest, message string) {
-	if err := s.writeFrame(s.lifeCtx, newErrorResponse(req.requestID, message)); err != nil {
-		s.pushAnswerFailure(req, err)
-		return
-	}
 	s.queue.push(queueItem{event: req.unknownControlRequest()})
+	s.enqueueAnswer(req, newErrorResponse(req.requestID, message), nil)
 }
 
 // refuseUndecodable answers a request the session could not decode with an
 // error response and queues an UndecodableEvent.
 func (s *Session) refuseUndecodable(req controlRequest, decodeErr error) {
 	message := fmt.Sprintf("claudestream could not decode the %s request: %v", req.subtype, decodeErr)
-	if err := s.writeFrame(s.lifeCtx, newErrorResponse(req.requestID, message)); err != nil {
-		s.pushAnswerFailure(req, err)
-		return
-	}
 	s.queue.push(queueItem{event: UndecodableEvent{EventHeader: req.header, Raw: req.raw, Err: decodeErr}})
+	s.enqueueAnswer(req, newErrorResponse(req.requestID, message), nil)
 }
 
 // pushAnswerFailure queues the failure to answer a request as an error the
 // turn returns: Claude Code waits for that answer, so the turn cannot end.
+// It never blocks: the writer goroutine calls it.
 func (s *Session) pushAnswerFailure(req controlRequest, err error) {
 	s.queue.push(queueItem{err: fmt.Errorf("answering Claude Code's %s request %s: %w", req.subtype, req.requestID, err)})
 }

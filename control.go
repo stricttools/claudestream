@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"slices"
 	"strconv"
 	"sync"
 	"time"
@@ -15,73 +16,322 @@ import (
 // blocked stdin write return when its context ends.
 var pastDeadline = time.Unix(1, 0)
 
-// writeFrame writes one frame to Claude Code's stdin as a JSON line. Writes
-// are serialized; waiting for the turn to write and the write itself end
-// when ctx does. A write that stopped part-way leaves a broken frame on
-// stdin, so it makes the session unusable and refuses every later write.
-func (s *Session) writeFrame(ctx context.Context, frame any) error {
-	data, err := json.Marshal(frame)
-	if err != nil {
-		return fmt.Errorf("encoding a frame for Claude Code's stdin: %w", err)
-	}
-	data = append(data, '\n')
+// stdinWriter is the only writer of Claude Code's stdin. Its goroutine
+// writes the submitted frames one at a time, in submission order. Submitting
+// never waits for a write, so the stdout reader answers Claude Code's
+// requests without ever blocking on stdin.
+//
+// A write that fails, or stops part-way and leaves a broken frame on stdin,
+// makes the writer fail every queued and later frame with an error wrapping
+// ErrSessionUnusable. After stop, queued and later frames fail with
+// ErrSessionClosed.
+type stdinWriter struct {
+	file *os.File
+	// broke is called once, on the writer goroutine, when a write failure
+	// makes stdin unusable.
+	broke func()
 
-	select {
-	case s.stdinLock <- struct{}{}:
-	case <-ctx.Done():
-		return ctx.Err()
+	mu       sync.Mutex
+	queue    []*frameWrite
+	stopping bool
+	failure  error
+	// wake holds at most one pending wake-up for the writer goroutine.
+	wake chan struct{}
+	// failed is closed when failure is set.
+	failed chan struct{}
+	// exited is closed when the writer goroutine returns.
+	exited chan struct{}
+}
+
+// frameWrite is one frame waiting to be written.
+type frameWrite struct {
+	// ctx bounds the write: a frame whose ctx ended before its turn is not
+	// written, and a write in progress is interrupted through a past
+	// deadline.
+	ctx  context.Context
+	data []byte
+	// outcome receives the result once; buffered so the writer never waits.
+	outcome chan error
+	// written, when set, is run once with the result: on the writer
+	// goroutine, or on the goroutine of stop when the frame was still queued.
+	// It must not block.
+	written func(error)
+}
+
+// newStdinWriter returns a writer of file; start its goroutine with run.
+func newStdinWriter(file *os.File, broke func()) *stdinWriter {
+	return &stdinWriter{
+		file:   file,
+		broke:  broke,
+		wake:   make(chan struct{}, 1),
+		failed: make(chan struct{}),
+		exited: make(chan struct{}),
 	}
-	defer func() { <-s.stdinLock }()
-	if err := s.writable(); err != nil {
+}
+
+func (w *stdinWriter) signal() {
+	select {
+	case w.wake <- struct{}{}:
+	default:
+	}
+}
+
+// submit queues data for writing under ctx; written, when set, receives the
+// result (see frameWrite.written).
+func (w *stdinWriter) submit(ctx context.Context, data []byte, written func(error)) (*frameWrite, error) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	switch {
+	case w.stopping:
+		return nil, ErrSessionClosed
+	case w.failure != nil:
+		return nil, w.failure
+	}
+	fw := &frameWrite{ctx: ctx, data: data, outcome: make(chan error, 1), written: written}
+	w.queue = append(w.queue, fw)
+	w.signal()
+	return fw, nil
+}
+
+// write queues data and waits for it to be written. When ctx ends while the
+// frame still waits its turn, the frame is withdrawn; when it ends during
+// the write, the write is interrupted and its result returned.
+func (w *stdinWriter) write(ctx context.Context, data []byte) error {
+	if err := ctx.Err(); err != nil {
+		return fmt.Errorf("writing to Claude Code's stdin: %w", err)
+	}
+	fw, err := w.submit(ctx, data, nil)
+	if err != nil {
 		return err
 	}
+	select {
+	case err := <-fw.outcome:
+		return err
+	case <-ctx.Done():
+		if w.withdraw(fw) {
+			return fmt.Errorf("waiting to write to Claude Code's stdin: %w", ctx.Err())
+		}
+		return <-fw.outcome
+	}
+}
 
-	stdin := s.proc.stdin
+// enqueue queues data without waiting; written receives the result (see
+// frameWrite.written), or receives the refusal at once on this goroutine.
+func (w *stdinWriter) enqueue(ctx context.Context, data []byte, written func(error)) {
+	if _, err := w.submit(ctx, data, written); err != nil {
+		written(err)
+	}
+}
+
+// withdraw removes fw from the queue and reports whether it was still there.
+func (w *stdinWriter) withdraw(fw *frameWrite) bool {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	i := slices.Index(w.queue, fw)
+	if i < 0 {
+		return false
+	}
+	w.queue = slices.Delete(w.queue, i, i+1)
+	return true
+}
+
+// failureErr reports why stdin became unusable; nil while it is usable.
+func (w *stdinWriter) failureErr() error {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	return w.failure
+}
+
+// stop makes the writer goroutine return once the write in progress, if
+// any, has ended, and fails every queued and later frame with
+// ErrSessionClosed. Closing the file afterwards interrupts a write still in
+// progress.
+func (w *stdinWriter) stop() {
+	w.mu.Lock()
+	queued := w.queue
+	w.queue = nil
+	w.stopping = true
+	w.signal()
+	w.mu.Unlock()
+	for _, fw := range queued {
+		fw.resolve(ErrSessionClosed)
+	}
+}
+
+func (fw *frameWrite) resolve(err error) {
+	fw.outcome <- err
+	if fw.written != nil {
+		fw.written(err)
+	}
+}
+
+// run is the writer goroutine.
+func (w *stdinWriter) run() {
+	defer close(w.exited)
+	for {
+		fw, ok := w.next()
+		if !ok {
+			return
+		}
+		frameErr, breakErr := w.writeOne(fw)
+		var failedFrames []*frameWrite
+		var failure error
+		if breakErr != nil {
+			failedFrames, failure = w.fail(breakErr)
+		}
+		fw.resolve(frameErr)
+		for _, queued := range failedFrames {
+			queued.resolve(failure)
+		}
+	}
+}
+
+// next waits for the next frame; false once the writer is stopping.
+func (w *stdinWriter) next() (*frameWrite, bool) {
+	for {
+		w.mu.Lock()
+		if w.stopping {
+			w.mu.Unlock()
+			return nil, false
+		}
+		if len(w.queue) > 0 {
+			fw := w.queue[0]
+			w.queue[0] = nil
+			w.queue = w.queue[1:]
+			if len(w.queue) == 0 {
+				w.queue = nil
+			}
+			w.mu.Unlock()
+			return fw, true
+		}
+		w.mu.Unlock()
+		<-w.wake
+	}
+}
+
+// fail records why stdin became unusable, takes every queued frame to fail
+// with it, and tells the session once.
+func (w *stdinWriter) fail(cause error) ([]*frameWrite, error) {
+	w.mu.Lock()
+	first := w.failure == nil
+	if first {
+		w.failure = fmt.Errorf("%w: %w", ErrSessionUnusable, cause)
+		close(w.failed)
+	}
+	failure := w.failure
+	queued := w.queue
+	w.queue = nil
+	w.mu.Unlock()
+	if first {
+		w.broke()
+	}
+	return queued, failure
+}
+
+func (w *stdinWriter) isStopping() bool {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	return w.stopping
+}
+
+// writeOne writes one frame. It returns the frame's result and, when stdin
+// can no longer be used, why.
+func (w *stdinWriter) writeOne(fw *frameWrite) (frameErr, breakErr error) {
+	if err := fw.ctx.Err(); err != nil {
+		return fmt.Errorf("writing to Claude Code's stdin: %w", err), nil
+	}
 	var deadlineErr error
 	deadlineSet := make(chan struct{})
-	stop := context.AfterFunc(ctx, func() {
-		deadlineErr = stdin.SetWriteDeadline(pastDeadline)
+	stopDeadline := context.AfterFunc(fw.ctx, func() {
+		deadlineErr = w.file.SetWriteDeadline(pastDeadline)
 		close(deadlineSet)
 	})
-	written, writeErr := stdin.Write(data)
-	if !stop() {
+	written, writeErr := w.file.Write(fw.data)
+	if !stopDeadline() {
 		<-deadlineSet
 	}
-	resetErr := stdin.SetWriteDeadline(time.Time{})
+	var resetErr error
+	if err := w.file.SetWriteDeadline(time.Time{}); err != nil {
+		resetErr = fmt.Errorf("clearing the write deadline on Claude Code's stdin: %w", err)
+	}
 
-	if writeErr == nil {
-		// The frame is out; a deadline that failed to interrupt it no longer
-		// matters, but one that cannot be cleared would fail the next write.
-		if resetErr != nil {
-			return fmt.Errorf("clearing the write deadline on Claude Code's stdin: %w", resetErr)
+	switch {
+	case writeErr == nil:
+		// The frame is out; a deadline that cannot be cleared would fail the
+		// next write.
+		return nil, resetErr
+	case w.isStopping():
+		// Close closed stdin under the write; the writer is ending anyway.
+		return fmt.Errorf("%w: writing to Claude Code's stdin: %w", ErrSessionClosed, writeErr), nil
+	case fw.ctx.Err() != nil && errors.Is(writeErr, os.ErrDeadlineExceeded):
+		frameErr = fmt.Errorf("writing to Claude Code's stdin: %w", fw.ctx.Err())
+		var causes []error
+		if written > 0 {
+			causes = append(causes, errors.New("a write to Claude Code's stdin stopped part-way, leaving a broken frame"))
 		}
-		return nil
+		if deadlineErr != nil {
+			causes = append(causes, fmt.Errorf("setting the write deadline on Claude Code's stdin: %w", deadlineErr))
+		}
+		if resetErr != nil {
+			causes = append(causes, resetErr)
+		}
+		return frameErr, errors.Join(causes...)
+	default:
+		frameErr = fmt.Errorf("writing to Claude Code's stdin: %w", errors.Join(writeErr, deadlineErr, resetErr))
+		return frameErr, frameErr
 	}
-	if written > 0 {
-		s.mu.Lock()
-		s.stdinBroken = true
-		s.unusable = true
-		s.mu.Unlock()
+}
+
+// encodeFrame renders frame as one JSON line.
+func encodeFrame(frame any) ([]byte, error) {
+	data, err := json.Marshal(frame)
+	if err != nil {
+		return nil, fmt.Errorf("encoding a frame for Claude Code's stdin: %w", err)
 	}
-	if ctx.Err() != nil && errors.Is(writeErr, os.ErrDeadlineExceeded) {
-		return fmt.Errorf("writing to Claude Code's stdin: %w", ctx.Err())
+	return append(data, '\n'), nil
+}
+
+// writeFrame writes one frame to Claude Code's stdin through the writer
+// goroutine and waits for the result; ctx bounds both the wait for the
+// frame's turn and the write itself.
+func (s *Session) writeFrame(ctx context.Context, frame any) error {
+	data, err := encodeFrame(frame)
+	if err != nil {
+		return err
+	}
+	return s.writeError(s.stdin.write(ctx, data))
+}
+
+// enqueueAnswer queues an automatic answer to req without waiting for it to
+// be written. A failure to write it is queued for the turn; written, when
+// set, runs on the writer goroutine once the answer is out.
+func (s *Session) enqueueAnswer(req controlRequest, frame any, written func()) {
+	data, err := encodeFrame(frame)
+	if err != nil {
+		s.pushAnswerFailure(req, err)
+		return
+	}
+	s.stdin.enqueue(s.lifeCtx, data, func(err error) {
+		if err != nil {
+			s.pushAnswerFailure(req, s.writeError(err))
+			return
+		}
+		if written != nil {
+			written()
+		}
+	})
+}
+
+// writeError reports a failed write as the process's exit error once the
+// process has exited, unless a context or Close caused it.
+func (s *Session) writeError(err error) error {
+	if err == nil || errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) || errors.Is(err, ErrSessionClosed) {
+		return err
 	}
 	if exitErr := s.exitError(); exitErr != nil {
 		return exitErr
 	}
-	return fmt.Errorf("writing to Claude Code's stdin: %w", errors.Join(writeErr, deadlineErr))
-}
-
-func (s *Session) writable() error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	switch {
-	case s.closed:
-		return ErrSessionClosed
-	case s.stdinBroken:
-		return fmt.Errorf("%w: an earlier write to Claude Code's stdin stopped part-way", ErrSessionUnusable)
-	}
-	return nil
+	return err
 }
 
 // controlOutcome is the answer to one of the session's control requests:
