@@ -354,6 +354,9 @@ func (s *Session) finish(readErr error) {
 		<-s.proc.exited
 		s.proc.waitStderr(s.proc.shutdownTimeout)
 		err = &ErrProcessExited{ExitCode: s.proc.exitCode(), StderrTail: s.proc.stderrLines.snapshot()}
+		if waitErr := s.proc.waitError(); waitErr != nil {
+			err = errors.Join(err, waitErr)
+		}
 	case errors.Is(readErr, os.ErrClosed):
 		err = ErrSessionClosed
 	default:

@@ -38,6 +38,9 @@ type process struct {
 	// before.
 	exited chan struct{}
 	state  *os.ProcessState
+	// waitErr is a failure of the wait other than a non-zero exit; set
+	// before exited is closed.
+	waitErr error
 
 	shutdownTimeout time.Duration
 }
@@ -50,17 +53,20 @@ func startProcess(argv []string, env map[string]string, dir string, shutdownTime
 		return nil, errors.New("starting Claude Code: empty command line")
 	}
 	var parentEnds, childEnds []*os.File
-	closeAll := func(files []*os.File) {
+	closeAll := func(files []*os.File) error {
+		var errs []error
 		for _, f := range files {
-			_ = f.Close() // the descriptors were never handed out, or the child has its copies
+			if err := f.Close(); err != nil {
+				errs = append(errs, fmt.Errorf("closing a pipe of Claude Code's standard streams: %w", err))
+			}
 		}
+		return errors.Join(errs...)
 	}
 	newPipe := func() (r, w *os.File, err error) {
 		r, w, err = os.Pipe()
 		if err != nil {
-			closeAll(parentEnds)
-			closeAll(childEnds)
-			return nil, nil, fmt.Errorf("starting Claude Code: creating a pipe: %w", err)
+			return nil, nil, errors.Join(fmt.Errorf("starting Claude Code: creating a pipe: %w", err),
+				closeAll(parentEnds), closeAll(childEnds))
 		}
 		return r, w, nil
 	}
@@ -83,9 +89,8 @@ func startProcess(argv []string, env map[string]string, dir string, shutdownTime
 	// Deadlines on stdin are how a write gives up when its context ends;
 	// refuse to start if the pipe does not support them.
 	if err := stdinW.SetWriteDeadline(time.Time{}); err != nil {
-		closeAll(parentEnds)
-		closeAll(childEnds)
-		return nil, fmt.Errorf("starting Claude Code: the stdin pipe does not support write deadlines: %w", err)
+		return nil, errors.Join(fmt.Errorf("starting Claude Code: the stdin pipe does not support write deadlines: %w", err),
+			closeAll(parentEnds), closeAll(childEnds))
 	}
 
 	cmd := exec.Command(argv[0], argv[1:]...)
@@ -97,10 +102,25 @@ func startProcess(argv []string, env map[string]string, dir string, shutdownTime
 	startErr := cmd.Start()
 	// The child holds its own copies of its ends; the parent's must close so
 	// that EOF arrives when the child exits.
-	closeAll(childEnds)
+	closeChildErr := closeAll(childEnds)
 	if startErr != nil {
-		closeAll(parentEnds)
-		return nil, fmt.Errorf("starting Claude Code (%s): %w", argv[0], startErr)
+		return nil, errors.Join(fmt.Errorf("starting Claude Code (%s): %w", argv[0], startErr),
+			closeChildErr, closeAll(parentEnds))
+	}
+	if closeChildErr != nil {
+		// A child end left open in this process would keep EOF from ever
+		// arriving on stdout, so the process cannot be used.
+		killErr := cmd.Process.Kill()
+		if errors.Is(killErr, os.ErrProcessDone) {
+			killErr = nil
+		}
+		waitErr := cmd.Wait()
+		var exitErr *exec.ExitError
+		if errors.As(waitErr, &exitErr) {
+			waitErr = nil
+		}
+		return nil, errors.Join(fmt.Errorf("starting Claude Code (%s): %w", argv[0], closeChildErr),
+			killErr, waitErr, closeAll(parentEnds))
 	}
 
 	p := &process{
@@ -118,8 +138,14 @@ func startProcess(argv []string, env map[string]string, dir string, shutdownTime
 		p.stderrLines.drain(p.stderr)
 	}()
 	go func() {
-		// A non-zero exit is reported through state, not as a failure here.
-		_ = cmd.Wait()
+		// A non-zero exit is reported through state; any other failure of
+		// the wait is kept in waitErr.
+		if err := cmd.Wait(); err != nil {
+			var exitErr *exec.ExitError
+			if !errors.As(err, &exitErr) {
+				p.waitErr = fmt.Errorf("waiting for Claude Code to exit: %w", err)
+			}
+		}
 		p.state = cmd.ProcessState
 		close(p.exited)
 	}()
@@ -160,6 +186,17 @@ func (p *process) exitCode() int {
 		return p.state.ExitCode()
 	default:
 		return -1
+	}
+}
+
+// waitError is a failure of the wait other than a non-zero exit; nil
+// before the process exited.
+func (p *process) waitError() error {
+	select {
+	case <-p.exited:
+		return p.waitErr
+	default:
+		return nil
 	}
 }
 
