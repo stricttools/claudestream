@@ -206,6 +206,21 @@ func (c Config) limits() ProcessLimits {
 	return *c.Limits
 }
 
+// routesPermissionPrompts reports whether Claude Code is told to send its
+// permission prompts to the session over stdio (--permission-prompt-tool
+// stdio): with Tools, InterceptPermissions, or a Sandbox that restricts
+// tools or write paths. Such a session also sends the initialize handshake.
+func (c Config) routesPermissionPrompts() bool {
+	return len(c.Tools) > 0 || c.InterceptPermissions || (c.Sandbox != nil && c.Sandbox.restricts())
+}
+
+// sendsInitialize reports whether Start sends the initialize handshake:
+// when permission prompts are routed to the session, or SupportedDialogs is
+// not nil.
+func (c Config) sendsInitialize() bool {
+	return c.routesPermissionPrompts() || c.SupportedDialogs != nil
+}
+
 // toolServers returns the distinct Tool.Server names in order of first
 // appearance.
 func (c Config) toolServers() []string {

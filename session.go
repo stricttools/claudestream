@@ -79,7 +79,9 @@ type Session struct {
 // Start validates cfg, checks the Claude Code version, spawns Claude Code
 // under the configured profile, and completes the start-up handshake: the
 // initialize request when there are Tools, SupportedDialogs, or
-// InterceptPermissions, and with Tools the SDK MCP server registration and
+// InterceptPermissions, or a Sandbox restricts tools or write paths (the
+// same sessions that get --permission-prompt-tool stdio, plus
+// SupportedDialogs), and with Tools the SDK MCP server registration and
 // every server's tool listing. ctx bounds the start only; the session lives
 // until Close.
 func Start(ctx context.Context, cfg Config) (*Session, error) {
@@ -126,7 +128,7 @@ func Start(ctx context.Context, cfg Config) (*Session, error) {
 
 func (s *Session) handshake(ctx context.Context) error {
 	c := s.cfg
-	if len(c.Tools) == 0 && c.SupportedDialogs == nil && !c.InterceptPermissions {
+	if !c.sendsInitialize() {
 		return nil
 	}
 	servers := c.toolServers()

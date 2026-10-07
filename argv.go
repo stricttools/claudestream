@@ -46,7 +46,7 @@ func buildArgv(c Config) []string {
 		allowedTools = append(allowedTools, "mcp__"+server+"__*")
 	}
 	permissionPromptTool := ""
-	if len(c.Tools) > 0 || c.InterceptPermissions || (c.Sandbox != nil && sandbox.restricts()) {
+	if c.routesPermissionPrompts() {
 		permissionPromptTool = "stdio"
 	}
 
