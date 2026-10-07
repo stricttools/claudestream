@@ -88,9 +88,13 @@ func (h *harness) session(command string, extra ...string) []string {
 		"--claude-binary", h.claude, "--claudewheel-binary", h.claudewheel, "--no-color"}, extra...)
 }
 
-func cli(payload map[string]any) map[string]any { return map[string]any{"kind": "cli", "payload": payload} }
+func cli(payload map[string]any) map[string]any {
+	return map[string]any{"kind": "cli", "payload": payload}
+}
 
-func hostUser() map[string]any { return map[string]any{"kind": "host", "payload": map[string]any{"type": "user"}} }
+func hostUser() map[string]any {
+	return map[string]any{"kind": "host", "payload": map[string]any{"type": "user"}}
+}
 
 func successfulTurn() []map[string]any {
 	return []map[string]any{

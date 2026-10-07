@@ -11,6 +11,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stricttools/claudestream/internal/vcr"
 )
@@ -440,5 +441,154 @@ func TestPermissionRequestsWithoutASandboxAreForwardedAndAnswered(t *testing.T) 
 	}
 	if strings.Join(behaviors, ",") != "allow,cancelled" {
 		t.Errorf("answers %v", behaviors)
+	}
+}
+
+func controlSuccess(id string, response map[string]any) map[string]any {
+	return cli(map[string]any{"type": "control_response", "response": map[string]any{"subtype": "success", "request_id": id, "response": response}})
+}
+
+func TestControlMethodsRoundTrip(t *testing.T) {
+	path := cassette(t,
+		host("control_request", "interrupt"),
+		controlSuccess("ctrl_1", map[string]any{"still_queued": []string{"q1"}}),
+		host("control_request", "set_model"),
+		controlSuccess("ctrl_2", map[string]any{}),
+		host("control_request", "set_permission_mode"),
+		controlSuccess("ctrl_3", map[string]any{}),
+		host("control_request", "get_context_usage"),
+		controlSuccess("ctrl_4", map[string]any{"totalTokens": 1200, "maxTokens": 200000, "percentage": 0.6,
+			"categories": []any{map[string]any{"name": "system", "tokens": 1000}}, "isAutoCompactEnabled": true}),
+		host("control_request", "get_context_usage"),
+		controlSuccess("ctrl_5", map[string]any{"percentage": 1}),
+		host("control_request", "set_model"),
+		cli(map[string]any{"type": "control_response", "response": map[string]any{"subtype": "error", "request_id": "ctrl_6", "error": "no such model"}}),
+	)
+	cfg, log := scenarioConfig(t, path)
+	ctx := timeoutCtx(t)
+	s, err := Start(ctx, cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	queued, err := s.Interrupt(ctx)
+	if err != nil || len(queued) != 1 || queued[0] != "q1" {
+		t.Fatalf("Interrupt: %v %v", queued, err)
+	}
+	model := "opus"
+	if err := s.SetModel(ctx, &model); err != nil {
+		t.Fatal(err)
+	}
+	if err := s.SetPermissionMode(ctx, "plan"); err != nil {
+		t.Fatal(err)
+	}
+	usage, err := s.GetContextUsage(ctx)
+	if err != nil || usage.TotalTokens != 1200 || usage.MaxTokens != 200000 || !usage.AutoCompactEnabled || len(usage.Categories) != 1 {
+		t.Fatalf("GetContextUsage: %+v %v", usage, err)
+	}
+	if _, err := s.GetContextUsage(ctx); err == nil {
+		t.Fatal("a usage without totalTokens was accepted")
+	}
+	var controlErr *ControlError
+	if err := s.SetModel(ctx, nil); !errors.As(err, &controlErr) {
+		t.Fatalf("an error response: %v", err)
+	}
+	if err := s.Close(); err != nil {
+		t.Fatal(err)
+	}
+	lines := hostLines(t, log)
+	setModel := lines[1]
+	if setModel["request_id"] != "ctrl_2" || setModel["request"].(map[string]any)["model"] != "opus" || setModel["request"].(map[string]any)["request_id"] != "ctrl_2" {
+		t.Errorf("set_model frame %v", setModel)
+	}
+	if _, has := lines[5]["request"].(map[string]any)["model"]; has {
+		t.Errorf("SetModel(nil) sent a model: %v", lines[5])
+	}
+}
+
+func TestACancelledTurnMakesTheSessionUnusable(t *testing.T) {
+	path := cassette(t,
+		host("user", ""),
+		cli(initFrame("/w")),
+	)
+	cfg, _ := scenarioConfig(t, path)
+	ctx := timeoutCtx(t)
+	s, err := Start(ctx, cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer s.Close()
+	turn, err := s.Send(ctx, "x")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if ev, err := turn.Next(ctx); err != nil {
+		t.Fatalf("%v %v", ev, err)
+	}
+	short, cancel := context.WithTimeout(ctx, 100*time.Millisecond)
+	defer cancel()
+	if _, err := turn.Next(short); !errors.Is(err, context.DeadlineExceeded) {
+		t.Fatalf("a waiting Next: %v", err)
+	}
+	if _, err := s.Send(ctx, "y"); !errors.Is(err, ErrSessionUnusable) {
+		t.Fatalf("a send after a cancelled turn: %v", err)
+	}
+}
+
+func TestALineOverTheLimitIsAnError(t *testing.T) {
+	path := cassette(t,
+		host("user", ""),
+		raw(strings.Repeat("x", 2048)),
+	)
+	cfg, _ := scenarioConfig(t, path)
+	cfg.Limits = &ProcessLimits{LineLimit: 1024, ShutdownTimeout: 2 * time.Second, VersionCheckTimeout: 5 * time.Second}
+	ctx := timeoutCtx(t)
+	s, err := Start(ctx, cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer s.Close()
+	turn, err := s.Send(ctx, "x")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := drain(t, ctx, turn); err == nil || !strings.Contains(err.Error(), "1024") {
+		t.Fatalf("turn ended with %v", err)
+	}
+}
+
+func TestCloseReportsAToolHandlerThatDoesNotReturn(t *testing.T) {
+	block := make(chan struct{})
+	defer close(block)
+	path := cassette(t,
+		host("control_request", "initialize"),
+		cli(map[string]any{"type": "control_response", "response": map[string]any{"subtype": "success", "response": map[string]any{}}}),
+		host("control_request", "mcp_set_servers"),
+		cli(map[string]any{"type": "control_response", "response": map[string]any{"subtype": "success", "response": map[string]any{}}}),
+		cli(cliRequest("m1", "mcp_message", map[string]any{"server_name": "srv", "message": map[string]any{"jsonrpc": "2.0", "method": "tools/list", "id": 1}})),
+		host("control_response", "success"),
+		host("user", ""),
+		cli(cliRequest("m2", "mcp_message", map[string]any{"server_name": "srv", "message": map[string]any{"jsonrpc": "2.0", "method": "tools/call", "id": 2, "params": map[string]any{"name": "stuck", "arguments": map[string]any{}}}})),
+	)
+	cfg, _ := scenarioConfig(t, path)
+	cfg.Limits = &ProcessLimits{LineLimit: DefaultLineLimit, ShutdownTimeout: 300 * time.Millisecond, VersionCheckTimeout: 5 * time.Second}
+	started := make(chan struct{})
+	cfg.Tools = []Tool{{Server: "srv", Name: "stuck", InputSchema: map[string]any{"type": "object"},
+		Handler: func(ctx context.Context, args json.RawMessage) (string, error) {
+			close(started)
+			<-block
+			return "", nil
+		}}}
+	ctx := timeoutCtx(t)
+	s, err := Start(ctx, cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := s.Send(ctx, "x"); err != nil {
+		t.Fatal(err)
+	}
+	<-started
+	err = s.Close()
+	if err == nil || !strings.Contains(err.Error(), "tool handler") {
+		t.Fatalf("Close: %v", err)
 	}
 }
