@@ -94,6 +94,18 @@ func fail(ctx *strictcli.Context, runCtx context.Context, err error) strictcli.O
 	return strictcli.Exit(1)
 }
 
+// failErrorResult reports a Result that Claude Code ended with an error: its
+// result text on stderr (in machine mode, as a diagnostic), and exit 1.
+// Every session command calls it when result.IsError is true.
+func failErrorResult(ctx *strictcli.Context, result claudestream.Result) strictcli.Outcome {
+	message := result.Result
+	if message == "" {
+		message = fmt.Sprintf("Claude Code ended the turn with an error (subtype %q) and no result text", result.Subtype)
+	}
+	ctx.Error(message)
+	return strictcli.Exit(1)
+}
+
 // output is where a session command writes its rendering.
 type output struct {
 	stdout       io.Writer

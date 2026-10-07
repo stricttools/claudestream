@@ -48,7 +48,7 @@ func registerAgentCommands(app *strictcli.App) {
 			strictcli.Short("m"), strictcli.Optional()),
 	}
 	group.Command("run",
-		"Run one prompt through an agent definition and write the reply's text to stdout as it arrives, with markers on stderr as the stream command writes them. The agent's resolved prompt template becomes the system prompt, its name the session name, and its sandbox, budget, MCP, and stream tables replace the defaults. With --agent-name, the agents directory is searched under --cwd, or under the current directory when --cwd is omitted. Agents that declare tools are refused: their handlers exist only in Go programs that call the agent package",
+		"Run one prompt through an agent definition and write the reply's text to stdout as it arrives, with markers on stderr as the stream command writes them. The agent's resolved prompt template becomes the system prompt, its name the session name, and its sandbox, budget, MCP, and stream tables replace the defaults. With --agent-name, the agents directory is searched under --cwd, or under the current directory when --cwd is omitted. Agents that declare tools are refused: their handlers exist only in Go programs that call the agent package. A turn that Claude Code ends with an error exits 1 with the result text on stderr",
 		handleAgentRun,
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.WithDryRunUnsupported(sessionDryRunReason),

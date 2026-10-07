@@ -2,7 +2,6 @@ package cli
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/stricttools/strictcli/go/strictcli"
@@ -25,21 +24,21 @@ func registerSessionCommands(app *strictcli.App) {
 		flags(),
 	)
 	app.Command("stream",
-		"Send one prompt to Claude Code and write the reply's text to stdout as it arrives, with a one-line marker on stderr for each thinking block, tool call, tool result, and notice",
+		"Send one prompt to Claude Code and write the reply's text to stdout as it arrives, with a one-line marker on stderr for each thinking block, tool call, tool result, and notice. A turn that Claude Code ends with an error exits 1 with the result text on stderr",
 		renderedHandler(printer.Live),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.WithDryRunUnsupported(sessionDryRunReason),
 		flags(),
 	)
 	app.Command("send",
-		"Send one prompt to Claude Code and render the whole turn on stdout: the reply's text as it arrives, thinking, each tool call with its input as JSON, and each tool result; notices go to stderr",
+		"Send one prompt to Claude Code and render the whole turn on stdout: the reply's text as it arrives, thinking, each tool call with its input as JSON, and each tool result; notices go to stderr. A turn that Claude Code ends with an error exits 1 with the result text on stderr",
 		renderedHandler(printer.Detailed),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.WithDryRunUnsupported(sessionDryRunReason),
 		flags(),
 	)
 	app.Command("events",
-		"Send one prompt to Claude Code and copy every line Claude Code writes to its stdout (stream-json) to stdout verbatim, for debugging the protocol",
+		"Send one prompt to Claude Code and copy every line Claude Code writes to its stdout (stream-json) to stdout verbatim, for debugging the protocol. A turn that Claude Code ends with an error exits 1 with the result text on stderr",
 		handleEvents,
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.WithDryRunUnsupported(sessionDryRunReason),
@@ -76,13 +75,16 @@ func runRendered(ctx *strictcli.Context, mode printer.Mode, opts sessionOptions,
 	runCtx, cancel := runContext(ctx)
 	defer cancel()
 
-	_, err = runOneTurn(runCtx, start, opts.prompt, p.Render)
+	result, err := runOneTurn(runCtx, start, opts.prompt, p.Render)
 	if finishErr := p.Finish(); finishErr != nil {
 		err = errors.Join(err, finishErr)
 	}
 	out.flush()
 	if err != nil {
 		return fail(ctx, runCtx, err)
+	}
+	if result.IsError {
+		return failErrorResult(ctx, result)
 	}
 	return strictcli.Exit(0)
 }
@@ -108,6 +110,9 @@ func handleEvents(ctx *strictcli.Context, kwargs map[string]interface{}) strictc
 		if err := out.footer(result); err != nil {
 			return fail(ctx, runCtx, err)
 		}
+	}
+	if result.IsError {
+		return failErrorResult(ctx, result)
 	}
 	return strictcli.Exit(0)
 }
@@ -205,12 +210,7 @@ func handleAsk(ctx *strictcli.Context, kwargs map[string]interface{}) strictcli.
 		}
 	}
 	if result.IsError {
-		message := result.Result
-		if message == "" {
-			message = fmt.Sprintf("Claude Code ended the turn with an error (subtype %q) and no result text", result.Subtype)
-		}
-		ctx.Error(message)
-		return strictcli.Exit(1)
+		return failErrorResult(ctx, result)
 	}
 	if !ctx.JSON() {
 		ctx.Out(text.String())
