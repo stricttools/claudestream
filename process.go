@@ -95,7 +95,7 @@ func startProcess(argv []string, env map[string]string, dir string, shutdownTime
 
 	cmd := exec.Command(argv[0], argv[1:]...)
 	cmd.Dir = dir
-	cmd.Env = mergeEnv(os.Environ(), env)
+	cmd.Env = mergeEnv(cmd.Environ(), env)
 	cmd.Stdin = stdinR
 	cmd.Stdout = stdoutW
 	cmd.Stderr = stderrW
