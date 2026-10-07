@@ -164,24 +164,25 @@ func (p *process) exitCode() int {
 }
 
 func (p *process) waitExit(timeout time.Duration) bool {
-	timer := time.NewTimer(timeout)
-	defer timer.Stop()
-	select {
-	case <-p.exited:
-		return true
-	case <-timer.C:
-		return false
-	}
+	return waitClosed(p.exited, timeout)
 }
 
 // waitStderr gives the stderr drain up to timeout to read the last lines
-// after the process exited.
-func (p *process) waitStderr(timeout time.Duration) {
+// after the process exited, and reports whether it finished.
+func (p *process) waitStderr(timeout time.Duration) bool {
+	return waitClosed(p.stderrDone, timeout)
+}
+
+// waitClosed waits up to timeout for done to close and reports whether it
+// did.
+func waitClosed(done <-chan struct{}, timeout time.Duration) bool {
 	timer := time.NewTimer(timeout)
 	defer timer.Stop()
 	select {
-	case <-p.stderrDone:
+	case <-done:
+		return true
 	case <-timer.C:
+		return false
 	}
 }
 

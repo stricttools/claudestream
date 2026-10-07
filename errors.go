@@ -21,6 +21,14 @@ var ErrSessionUnusable = errors.New("session is unusable after a cancelled turn 
 // not logged in or its credentials are rejected.
 var ErrAuthentication = errors.New("Claude Code reported an authentication failure; log the profile in again or check its credentials")
 
+// ErrSessionClosed is returned by every operation on a session after Close.
+var ErrSessionClosed = errors.New("session is closed")
+
+// ErrUnknownRequest is returned when a response names a request ID the
+// session is not waiting to answer: never received, already answered, or of
+// another request type (a permission answer for a dialog, for example).
+var ErrUnknownRequest = errors.New("no unanswered request with this ID")
+
 // ErrLineTooLong is returned when a stdout line exceeds the configured line
 // limit.
 var ErrLineTooLong = errors.New("Claude Code wrote a stdout line longer than the line limit")

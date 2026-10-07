@@ -289,8 +289,9 @@ type UserDialogRequest struct {
 	ToolUseID *string
 }
 
-// SDKToolCall reports a call to one of the session's Tools, after its
-// handler returned and the answer was sent.
+// SDKToolCall reports a call to one of the session's Tools after its
+// handler returned; the answer is sent to Claude Code right after the event
+// is queued.
 type SDKToolCall struct {
 	EventHeader
 	Server    string
@@ -302,7 +303,9 @@ type SDKToolCall struct {
 }
 
 // UnknownControlRequest reports a control request the session does not
-// handle; the session has already answered it with an error response.
+// handle, including an MCP message for a server or method the SDK MCP
+// servers do not serve; the session has already answered it with an error
+// (a control error response, or a JSON-RPC error for an MCP message).
 type UnknownControlRequest struct {
 	EventHeader
 	RequestID string
