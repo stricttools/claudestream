@@ -8,10 +8,8 @@ import "strings"
 // and boolean flags when true; list flags repeat the flag once per value,
 // except --tools, which takes one comma-joined value.
 func buildArgv(c Config) []string {
-	argv := []string{
-		c.ClaudewheelBinary, "profile", "exec", "--name", c.Profile, "--",
-		c.ClaudeBinary, "--output-format", "stream-json", "--input-format", "stream-json",
-	}
+	argv := ProfileExecArgv(c.ClaudewheelBinary, c.Profile,
+		c.ClaudeBinary, "--output-format", "stream-json", "--input-format", "stream-json")
 	value := func(flag, v string) {
 		if v != "" {
 			argv = append(argv, flag, v)
