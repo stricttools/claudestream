@@ -8,7 +8,7 @@
       "language": "python"
     }
   ],
-  "docs": "stricttools/docs",
+  "docs": ".strictmetadata/docs",
   "base_url": "https://smmh.dev/claudestream",
   "versions": [
     {
@@ -23,7 +23,7 @@
     }
   ],
   "directives": {
-    "table-events": "stricttools/docs/_directives/event_catalog.py"
+    "table-events": ".strictmetadata/docs/_directives/event_catalog.py"
   },
   "gen": {
     "exclude": [
@@ -32,8 +32,18 @@
     ]
   },
   "root_files": [
-    "stricttools/docs/_CLAUDE.md",
-    "stricttools/docs/_README.md"
+    {
+      "template": ".strictmetadata/docs/_CLAUDE.md",
+      "outputs": [
+        ".claude/CLAUDE.md"
+      ]
+    },
+    {
+      "template": ".strictmetadata/docs/_README.md",
+      "outputs": [
+        "README.md"
+      ]
+    }
   ],
   "topology": {
     "slug": "claudestream",
