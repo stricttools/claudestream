@@ -1,5 +1,5 @@
 {
-  "version": "0.15.3",
+  "version": "0.16.0",
   "description": "Drive Claude Code from Go: run it as a subprocess under a claudewheel profile and read its stream-json output as typed events, with sandboxed permissions, budget thresholds, tools served over MCP, agent definitions, and a command line",
   "repo": "https://github.com/stricttools/claudestream",
   "source": [
@@ -16,7 +16,7 @@
   "base_url": "https://smmh.dev/claudestream",
   "versions": [
     {
-      "version": "0.15.3"
+      "version": "0.16.0"
     }
   ],
   "locales": [

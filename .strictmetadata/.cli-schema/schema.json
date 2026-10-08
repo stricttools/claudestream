@@ -84,7 +84,7 @@
   },
   "project_id": "github.com/stricttools/claudestream",
   "name": "claudestream",
-  "version": "dev",
+  "version": "0.16.0",
   "help": "Drive Claude Code from the command line: start a session under a claudewheel profile, send one prompt, and print the reply as final text, live text, a detailed rendering, or the raw stream-json lines; run agent definitions; and check the installation",
   "commands": {
     "ask": {

@@ -2,15 +2,36 @@
 
 # Changelog
 
-## Unreleased
+## 0.16.0
+
+claudestream rewritten in Go: a library of typed Claude Code events with sessions started through claudewheel profile exec, strict TOML agent definitions, and a command line installed with go install or from the release archives. The Python package is no longer published; PyPI and npm keep 0.15.3.
+
+<details>
+<summary>Context</summary>
+
+The stricttools projects are moving to Go; the Python and npm releases stop at 0.15.3.
+
+</details>
 
 ### Breaking
 
-- **Python 3.14 required.** claudestream now declares `requires-python >=3.14`; installers on Python 3.11 to 3.13 can no longer install new versions.
+- **claudestream is now a Go module.** The Python package is gone: install the command with `go install github.com/stricttools/claudestream/cmd/claudestream@v0` (or from the Linux and macOS archives on each GitHub Release) and the library with `go get github.com/stricttools/claudestream@v0`. Nothing newer than 0.15.3 is published to PyPI or npm, and 0.15.3 stays there; Python programs that import claudestream stay on it.
+- **Sessions start Claude Code through claudewheel.** Claude Code runs as `claudewheel profile exec --name <profile> -- <claude> ...`, so a session needs a claudewheel with the `profile exec` command, and the profile's environment reaches Claude Code from claudewheel rather than from the calling process. The library takes absolute paths of both binaries and never searches `PATH`; `ResolveOnPath` finds one for a caller that wants that.
+- **The session config is explicit.** `Config` requires the model, the profile, both binaries, and the session to use (`NewSession`, `ResumeSession`, or `ContinueLastSession`), and `Config.Validate` refuses anything missing or contradictory instead of filling in a default. Tools are `Tool` values with an explicit JSON Schema and a handler, replacing the `@tool` decorator, its schemas from type hints, and handler injection. The sandbox drops `bare` (which passed `--bare` and disabled token login) and `log_violations`; the hooks, the cost log, the tool context, and the poll, join, and stuck timeouts are gone.
+- **One session type, read turn by turn.** `Start` returns a `Session`; `Send` returns a `Turn` whose `Next` yields typed events until `io.EOF`, replacing the async and sync sessions, `ask`, and `print_prompt`. Callbacks and lifecycle hooks are gone, and a session no longer restarts Claude Code when it goes quiet: a wedged turn waits until its context ends, and an authentication failure, a process exit, or a cancelled turn makes the session unusable.
+- **Agent definitions are strict TOML.** An agent is `.claudestream/agents/<name>.agent.toml` with `format_version = 2`; `.agent.json` files are refused, naming the steps to convert one by hand (keys one to one, `format_version = 2`, delete `bare` and `log_violations`, give every tool a `server`, rename the file). Unknown keys are refused, `[sandbox]` requires `skip_permissions`, and agents are found only in the agents directory of the working directory.
+- **The command line asks for everything it acts on.** `ask`, `stream`, `send`, `events`, and `agent run` take the prompt as `--prompt` or `--prompt-from-stdin`, and require `--profile`, one of `--new-session`, `--resume <id>`, or `--continue-session`, and one of `--skip-permissions` or `--no-skip-permissions`. `repl` and `config` are removed (`config --profile` printed the profile's token), as are `send --raw` and `--json-output`; `agent run --model` is required when the definition declares no model and refused when it declares one, and agents that declare tools are refused.
+
+### Features
+
+- **Command line additions.** `ask --json` puts the reply and its metadata, including the session ID to resume, in the document's payload; `doctor --profile` starts Claude Code through the profile once; `--claude-binary` and `--claudewheel-binary` choose the programs; `--color`/`--no-color` and `--footer`/`--no-footer` control the rendering; and `send` marks error tool results, permission decisions, tool calls the session served, and unrecognized frames.
 
 ### Fixes
 
-- **The package metadata names the repository where it actually lives.** The repository moved to the stricttools organisation, so the npm page's repository and issue links pointed at the old owner, and a publish whose build attestation named the new one was rejected.
+- **Claude Code never waits for an answer that does not come.** A control request the session does not handle, and an MCP message for an unknown server or method, are answered with an error and reported as events; a permission request a sandbox decides is answered and reported as `PermissionDecided` rather than also yielded as a request; and the SDK MCP `initialize` answers with the protocol version Claude Code proposed when it is one claudestream supports.
+- **Every line Claude Code writes reaches the consumer.** Non-JSON lines, frames that do not decode, and unknown content blocks become events instead of log warnings; `FileWrite` and `FileEdit` follow a successful tool result rather than the request; the permission mode, MCP server statuses, and authentication failures are read from the keys Claude Code sends; and rate limits are read from both of their shapes.
+- **List options repeat their flag.** Several MCP config files, added directories, files, plugin directories or URLs, betas, and allowed tools each get their own flag (`--mcp-config a --mcp-config b`) instead of one comma-joined value, which broke a session given more than one MCP config file.
+- **A failed turn fails the command.** Every session command exits 1, with the result text on stderr, when Claude Code ends the turn with an error.
 
 ## 0.15.3
 
