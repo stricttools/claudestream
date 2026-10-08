@@ -1,0 +1,5 @@
+{"format_version":2,"id":"18dc880d10b8fbeee274d650c2ab4450bfeea8079a6b617d","commits":["3220783e111f8f67c310e91f3723726f17d0a68d"],"user_facing":true,"description":"**Fixed MCP tool visibility.** Tools registered via `@tool` are now visible to the Claude Code model. The `--permission-prompt-tool stdio` flag was missing when MCP tools were registered without sandbox restrictions.","type":"fix"}
+{"format_version":2,"id":"18dc880d10b9737dbfb1a672b1b84c00ac637351d7c59c44","commits":["a1c715ec8bbc499a7e75b059cc7b07856a28898f"],"user_facing":false}
+{"format_version":2,"id":"18dc880d10b9b5dcb3c0e732d1524c3db4e3fb4bf6ed4ffe","commits":["61b13cf4aac2bd50d78a620c022562f3c25d8d41"],"user_facing":false}
+{"format_version":2,"id":"18dc880d10b9ee876a99869881d34f3f815b12cc771e17c0","commits":["bfa7b8b8ebd4d5d1c8edd4c4c952cfdad77b78ad"],"user_facing":false}
+{"format_version":2,"id":"18dc880d10ba2e3d3383ee081426427b8e17a6d2bbe801e5","commits":["1704b985ad54d78467d850c35edecc277cbc74ee","fa76915a884ebbcea46e39a78b80caea98ca66e3"],"user_facing":false}

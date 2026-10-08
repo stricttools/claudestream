@@ -1,0 +1,5 @@
+{"format_version":2,"id":"18dc880d10b765df1d3a20e3f9b143d29a6a417636e1ae1e","commits":["f85db3898daa95c5e2b6a3388c599003ab3316ca"],"user_facing":true,"description":"**npm package.** `npx claudestream` now works. The npm package is a thin CLI wrapper that shells out to the Python `claudestream` command.","type":"feature"}
+{"format_version":2,"id":"18dc880d10b7c4eeb968dd0a96d3421281c2f74e588e98b3","commits":["b94d9c75222708dd81a0a8792b012cbe7747abc6"],"user_facing":false}
+{"format_version":2,"id":"18dc880d10b7fea738465abb96c84bb58dce8bf2ebe7b5f1","commits":["cade1f0e6814dac364faab3f3b42f034a8b056b2"],"user_facing":false}
+{"format_version":2,"id":"18dc880d10b839833358c6b7d46242f19c17b7ebcb4714e1","commits":["be155d85aaf9b0691424007778e92248c76defcc","9906c8b96cf1f0909d016d665c8aa4a0f9af6aed","c6e244c4b2993a1edbdf89fa4f2ea30fc568ee56"],"user_facing":false}
+{"format_version":2,"id":"18dc880d10b8851e93605a61498045e4a6b283e11328a590","commits":["d6cb47f29997e4f9a4f538fcc9c357a2ed5370f0"],"user_facing":false}

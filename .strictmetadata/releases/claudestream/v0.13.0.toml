@@ -1,0 +1,18 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+# Version bump type: patch, minor, major, hotfix, or prerelease
+bump = "minor"
+# Short description of this release (required)
+description = "Control-protocol extensions for interactive clients: interrupt, live model and permission-mode switching, context usage, user dialogs, enriched permission prompts, and renderer observability."
+# Optional context explaining why these changes were made
+context = "These additions power alternative frontends that drive the claude CLI directly. AskUserQuestion is answered by feeding the choice back through a permission updatedInput, so interactive tools resolve without a separate answer channel. A correlation registry tracks pending control requests with restart-safe hard failures, so a dropped or restarted session surfaces an explicit error rather than a silently unresolved future."
+# Pre-release identifier: alpha, beta, rc, or stable
+# preid = ""
+# Set to true to generate a blog post for this release
+# blog = false
+include = ["npm", "pypi"]
+exclude = []
+release_commit = "a68ca94641f771425f0f270f167e464065d7628c"
+
+[released_trees]
+"." = "58a522b8697baac694e6594c29a4a616973485b7"

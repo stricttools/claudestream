@@ -1,0 +1,11 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+bump = "patch"
+include = ["pypi"]
+exclude = []
+# description reconstructed by `rlsbl release backfill` from github-release:v0.5.1
+description = "**Fix.** `--system-prompt` no longer adds `--bare`, which was blocking OAuth authentication. Uses `--append-system-prompt` instead."
+release_commit = "09bd7e7c67fdbe16554c04fd689a157d11c8bc7f"
+
+[released_trees]
+"." = "10cb45c08d2a8148acc5f4d982d853b9ec37e784"

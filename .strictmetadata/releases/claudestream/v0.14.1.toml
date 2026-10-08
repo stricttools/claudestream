@@ -1,0 +1,46 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+# Version bump type: patch, minor, major, infra, or prerelease
+#   prerelease: advance an existing pre-release (0.6.0-beta.0 -> -beta.1)
+bump = "patch"
+# Short description of this release (required)
+description = "Privacy fix: the published sdist no longer carries the recording machine's paths or private tool inventory."
+# Optional context explaining why these changes were made
+context = """
+An audit of the 0.14.0 test infrastructure found that the VCR recorder's
+scrubber emptied only list-valued inventory keys. `memory_paths` arrives from
+the CLI as a dict, so it was copied verbatim and a real
+/tmp/.../-home-<user>-Projects-claudestream/... path shipped inside the
+committed cassette -- and inside the published sdist, which packages tests/.
+The cassette also carried the recording machine's full tool inventory.
+
+Scrubbing is now type-agnostic (dict, list, str) rather than list-shaped, the
+tools inventory is filtered to a public-tool allowlist, and both cassettes were
+re-recorded through the credential-less free lane (total_cost_usd 0, zero API
+spend). tests/test_cassette_hygiene.py is the backstop that does not need to
+know the schema: it greps every committed cassette for home directories, temp
+directories, $HOME, the operator username as a path segment and absolute-path
+shapes, so the next unknown protocol key cannot leak silently.
+
+The same audit found the spend guard weaker than advertised, all fixed here and
+pinned by tests: tests/test_integration.py hardcoded an absolute path to the
+real binary (the poisoned PATH only intercepts name lookups, so 19 tests were
+outside the guard); the guard hooks lived in tests/conftest.py, so `pytest
+scripts/` ran unguarded; the opt-in assertion checked only a skip count, which a
+broken local profile reproduces; and two spend-capable operator scripts in
+scripts/ were named test_*.py, so pytest collected them.
+"""
+# Pre-release channel: alpha, beta, rc, or stable (ordered;
+# demotion is an error). With patch/minor/major it ENTERS the
+# channel (0.5.2 + minor + alpha -> 0.6.0-alpha.0); with
+# bump = "prerelease" it promotes, and "stable" strips the
+# suffix. See docs/release-workflow.md#the-pre-release-channel.
+# preid = ""
+# Set to true to generate a blog post for this release
+# blog = false
+include = ["pypi", "npm"]
+exclude = []
+release_commit = "71c7cd9b74a599f01e5c7778edeb784704a8b11c"
+
+[released_trees]
+"." = "9afdc1828be495f7e8ae4ef17101ed44a03ec7de"

@@ -1,7 +1,0 @@
-{"format_version":1,"commits":["d3a3de665809b6ec18e02fbdc79fcfcbc27082bb"],"user_facing":true,"description":"**Fix.** Drain subprocess stderr to prevent pipe buffer deadlock that caused sessions to hang indefinitely.","type":"fix"}
-{"format_version":1,"commits":["7b7c76a9601f06f55f3eec2dd0f6f7d0aadb4c39","4687e6b9a08b9ff06782b6f2d759648ee1a47771"],"user_facing":true,"description":"**New feature.** Per-event INFO logging for all event types (Thinking, ToolUse, ToolResult, Result, ApiRetry, RateLimit) and a startup health probe that warns after 30s with no events.","type":"feature"}
-{"format_version":1,"commits":["758618f16c391d1e07d13c729aff35f788de72a4"],"user_facing":true,"description":"**Fix.** Parse `rate_limit_event` type and system `rate_limit` subtype correctly \u2014 rate limit events were silently dropped as UnknownEvent.","type":"fix"}
-{"format_version":1,"commits":["4687e6b9a08b9ff06782b6f2d759648ee1a47771"],"user_facing":false}
-{"format_version":1,"commits":["a08f6d3026a2c16edc20946b9f5a7f4a3acb0e28","38e856fd98d29b29576cdd2a9b7ba71ec65a0d9e"],"user_facing":false}
-{"format_version":1,"commits":["51795a3b2d660c8fef0435a238f516b1085a8f3d"],"user_facing":false}
-{"format_version":1,"commits":["465d1bee780522e5dbe2a7ebd83d119e85730f06"],"user_facing":false}

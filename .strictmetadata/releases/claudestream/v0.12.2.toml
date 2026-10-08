@@ -1,0 +1,14 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+# Version bump type: patch, minor, or major
+bump = "patch"
+# Short description of this release (required)
+description = "Fix liveness probe to use event-based timeout instead of CPU-based polling"
+# Optional context explaining why these changes were made
+context = ""
+include = ["pypi", "npm"]
+exclude = []
+release_commit = "d50a4215a5ffdedb4571883d5f6f385323d20f5e"
+
+[released_trees]
+"." = "07716d5195ea6663a5e2a9cb4c0379b63c0ac8e3"

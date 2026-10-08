@@ -1,0 +1,11 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+bump = "minor"
+include = ["pypi"]
+exclude = []
+# description reconstructed by `rlsbl release backfill` from github-release:v0.5.0
+description = "**Breaking.** `model` and `profile` are now required parameters in the library API (`AsyncSession`, `SyncSession`, `print_prompt`)."
+release_commit = "606928f2fd922a670e07163cd1327c6f9304530c"
+
+[released_trees]
+"." = "841df82b528099ec6ca2fab34220c0755b37999b"

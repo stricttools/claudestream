@@ -1,0 +1,6 @@
+{"format_version":2,"id":"18dc880d104790c38d535aef8e634ca2b5646d0b7206849a","commits":["dfc2f5e8513512ff0dd0f7323284ed5ae3917b4f"],"user_facing":false}
+{"format_version":2,"id":"18dc880d10486850b27c46615e4846868849e84f90e95f1f","commits":["8f996763a9141845d5eaf06d49f5d8047e751eeb"],"user_facing":true,"description":"**Fix.** Regenerated uv.lock to resolve dependencies from PyPI instead of local editable paths, fixing CI test failures.","type":"fix"}
+{"format_version":2,"id":"18dc880d10496c7bbc2e822584ab472ca941449c476fc2ff","commits":["dc3f3a5757e295b33842b49a6c44eb0c5e7cc133"],"user_facing":true,"description":"**Fix.** Clarified Usage struct docstring to explain context-dependent semantics (per-call vs cumulative).","type":"fix"}
+{"format_version":2,"id":"18dc880d104a2efa28daa4d767844963960fcafd175f9e9b","commits":["24abdb97cadc1f4b533525c95bd0430232cdb6e4"],"user_facing":false}
+{"format_version":2,"id":"18dc880d104acee1236b484d64cb46788ae3eb4d91b122ad","commits":["a7d43dc5e3062f59d4107c849573ba8eb3279a7d"],"user_facing":false}
+{"format_version":2,"id":"18dc880d104b6301a7892a199e944e1cbb5bd97143070e2e","commits":["062499a77d40641d80705df5cf3cd09e9c8215a7"],"user_facing":false}

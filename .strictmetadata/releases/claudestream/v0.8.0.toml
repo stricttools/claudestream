@@ -1,0 +1,12 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+# Version bump type: patch, minor, or major
+bump = "minor"
+include = ["pypi", "npm"]
+exclude = []
+# description reconstructed by `rlsbl release backfill` from github-release:v0.8.0
+description = "**Documentation.** README.md and CLAUDE.md are now auto-generated from selfdoc templates with comprehensive examples, architecture narrative, and API reference tables."
+release_commit = "2bd60f96a1e493395e5edc149b86e056e1155efa"
+
+[released_trees]
+"." = "5d6be6f9985f663e851cf5baac071d24c1f35a91"

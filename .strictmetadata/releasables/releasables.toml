@@ -1,0 +1,32 @@
+format_version = 1
+repository_layout = "standalone"
+release_branches = ["main", "master"]
+
+[timeouts]
+push_seconds = 120
+check_seconds = 300
+
+[[releasables]]
+name = "claudestream"
+tag_format = "v{version}"
+publish_mode = "ci"
+
+[[members]]
+path = "."
+name = "root"
+releasable = "claudestream"
+targets = [{ name = "pypi" }, { name = "npm" }]
+
+[[members.pipelines]]
+name = "npm"
+type = "npm"
+target = "npm"
+local = false
+artifact = "package"
+
+[[members.pipelines]]
+name = "pypi"
+type = "pypi"
+target = "pypi"
+local = false
+artifact = "package"

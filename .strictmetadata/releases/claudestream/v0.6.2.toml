@@ -1,0 +1,11 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+bump = "patch"
+include = ["pypi"]
+exclude = []
+# description reconstructed by `rlsbl release backfill` from github-release:v0.6.2
+description = "**Stricter agent validation.** CLI `agent run` now fails early with a clear message when no model is specified. `invoke_agent` raises `ValueError` listing any tools missing handlers."
+release_commit = "80ce00959e09b4eada41b5db148ce2b1294663af"
+
+[released_trees]
+"." = "8f1d4854358c6490f19f27a3083bf0d394b6225d"

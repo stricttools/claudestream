@@ -1,0 +1,14 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+# Version bump type: patch, minor, or major
+bump = "minor"
+# Short description of this release (required)
+description = "Observe-not-limit budget redesign"
+# Optional context explaining why these changes were made
+context = "Budget fields replaced with threshold-based observation. Budget no longer kills sessions -- it emits BudgetThreshold events."
+include = ["pypi", "npm"]
+exclude = []
+release_commit = "4f77c9d47599628dc7dbb6d2dc0b6fa799930f89"
+
+[released_trees]
+"." = "4361612a408c863e2f3e92957740dec5607fed9a"

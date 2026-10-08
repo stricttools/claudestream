@@ -1,0 +1,30 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+# Version bump type: patch, minor, major, infra, or prerelease
+#   prerelease: advance an existing pre-release (0.6.0-beta.0 -> -beta.1)
+bump = "patch"
+# Short description of this release (required)
+description = "Ships the second machine-local path fix: probe_user_dialogs.py now requires --captures-dir instead of defaulting to an operator scratchpad path."
+# Optional context explaining why these changes were made
+context = """
+0.14.1 fixed a cassette privacy leak and added a repo-wide hygiene guard. That
+guard immediately found a second leak of the same class: scripts/probe_user_dialogs.py
+hardcoded an absolute operator scratchpad path (including a session UUID) as the
+default for its captures directory. The fix landed right after 0.14.1 was cut, so
+the offending path still ships in the 0.14.1 sdist. 0.14.2 exists to get the fixed
+artifact published.
+"""
+# Pre-release channel: alpha, beta, rc, or stable (ordered;
+# demotion is an error). With patch/minor/major it ENTERS the
+# channel (0.5.2 + minor + alpha -> 0.6.0-alpha.0); with
+# bump = "prerelease" it promotes, and "stable" strips the
+# suffix. See docs/release-workflow.md#the-pre-release-channel.
+# preid = ""
+# Set to true to generate a blog post for this release
+# blog = false
+include = ["pypi", "npm"]
+exclude = []
+release_commit = "8180d84233e04adfb41909c888f4537330c4e6c4"
+
+[released_trees]
+"." = "01f612dc4a569fc527792163f65b51d0bd58b5f8"

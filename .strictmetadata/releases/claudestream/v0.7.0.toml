@@ -1,0 +1,11 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+bump = "minor"
+include = ["pypi"]
+exclude = []
+# description reconstructed by `rlsbl release backfill` from github-release:v0.7.0
+description = "**SessionConfig.** Sessions, `print_prompt`, and `invoke_agent` now accept a single `SessionConfig` struct instead of individual parameters."
+release_commit = "20db254cdc83ba7e1741c2fd7fd4531b0d700f5e"
+
+[released_trees]
+"." = "4b349d6d7b11ee0d3e8ef64fd831be8806436af1"

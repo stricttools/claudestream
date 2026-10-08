@@ -1,8 +1,0 @@
-{"format_version":1,"commits":["e3547380d2ea705eddff51cdb188fdb8cd2ce3e1"],"user_facing":true,"description":"**Session resumption.** New `resume_session_id` parameter and `--resume` CLI flag to continue a previous Claude Code session.","type":"feature"}
-{"format_version":1,"commits":["ebe0ec2de52db28824bdf7889c1b64359acf4c07"],"user_facing":false}
-{"format_version":1,"commits":["72a352b1c8e7db8ae771e4792c156b3b2b286969","37b927ea7fb367ee85fc72766aa7324134c64ea9","5739d4fc134a2b001c76411df095ddf2dc792cb8"],"user_facing":false}
-{"format_version":1,"commits":["bb93e1b343e3aa648a107878dc954ef727c01736","59db593fde96f27ef381c2230e27b07d98d50bb0"],"user_facing":false}
-{"format_version":1,"commits":["de5d129558d38d09b3289b63d591cc8468f14b20"],"user_facing":false}
-{"format_version":1,"commits":["ab607f213dbbbf8289ff976b582641697b542dfa"],"user_facing":false}
-{"format_version":1,"commits":["33afc5647b0ae09178b761179ef9f4b44dcaf5b1"],"user_facing":false}
-{"format_version":1,"commits":["2fe947f80d7643990b9719b30b7b9fd95b0d6991","7025e0e47488bafc83287e40b469d79859b95251","3c0add42c1edb1ed61c71c5228be534c9bebf238","94a062f87e10be09f0e3b8d3ae35ab5fe6d8d230"],"user_facing":false}

@@ -1,5 +1,0 @@
-{"format_version":1,"commits":["17b8c09560dcde95d445d6c3778babc13c7133e2","2412a55d3557c7ff28bd39abe0a82a785fc079a6","2b8dd5552b85c8698ea395e0e93381b8095dfd45"],"user_facing":false}
-{"format_version":1,"commits":["9cb901ff74ab67143871314a4f391a8a8393b6dd","17b8c09560dcde95d445d6c3778babc13c7133e2","2412a55d3557c7ff28bd39abe0a82a785fc079a6"],"user_facing":false}
-{"format_version":1,"commits":["1160b1369e40e616fde991c8bcc915b81ac8c7ba"],"user_facing":true,"description":"**Fix.** Session no longer hangs during initialization -- SystemInit is now captured lazily on first send().","type":"fix"}
-{"format_version":1,"commits":["68d3b9af92f97e73ff225f0d4ad857e013b43eb4"],"user_facing":true,"description":"**Fix.** Extended thinking responses no longer crash -- increased subprocess readline buffer to 16MB.","type":"fix"}
-{"format_version":1,"commits":["164807e5e73f3d2f46d934e018d8b4dab0bc2c35","36897e55542784f9aca02dd4afd7e578a7c41903","98d5af0d1c7813f4cf60c977b230aba501728f63"],"user_facing":false}

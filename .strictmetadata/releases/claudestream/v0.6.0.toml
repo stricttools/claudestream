@@ -1,0 +1,11 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+bump = "minor"
+include = ["pypi"]
+exclude = []
+# description reconstructed by `rlsbl release backfill` from github-release:v0.6.0
+description = "**Sandbox system.** Replaced the Policy system with a unified `Sandbox` API combining tool allow-lists, `--bare` mode, and filesystem write-path scoping."
+release_commit = "d0b23e43156d041d88f0fe85c7f62b226bb53dbf"
+
+[released_trees]
+"." = "dd18d6736c3e72754d89b837f227d3419de68ec0"

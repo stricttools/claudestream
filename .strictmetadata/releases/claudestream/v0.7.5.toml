@@ -1,0 +1,11 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+bump = "patch"
+include = ["pypi", "npm"]
+exclude = []
+# description reconstructed by `rlsbl release backfill` from github-release:v0.7.5
+description = "**npm package.** `npx claudestream` now works. The npm package is a thin CLI wrapper that shells out to the Python `claudestream` command."
+release_commit = "a539dfc69c37dcb9d556772eabe6fabde9202939"
+
+[released_trees]
+"." = "df91b27dbc44b99ea0115fe5206312f5cec7e1d0"

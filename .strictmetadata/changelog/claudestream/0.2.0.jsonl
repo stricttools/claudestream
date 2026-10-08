@@ -1,0 +1,13 @@
+{"format_version":2,"id":"18dc880d1073b69b89cf7dee0e964fb3929310c811bb49b5","commits":["27d674a3629d565e91db505e5e0c66c9dfd2b065","8980eaab69a4cdfe3ba48804fbc9fa6da4dcdc32","f3f8c903e39d40bbd8ef222f7b92b99a24c4fe0a"],"user_facing":false}
+{"format_version":2,"id":"18dc880d10745936039e6cfc590c4ee1ae69c8406ae316dc","commits":["dc8f6d05d16824300c593ff1295752b4b2e2101f","990919b8f06577d72da36d6ae00c153d34e1b765"],"user_facing":false}
+{"format_version":2,"id":"18dc880d1074eb753e1ba5bec6c540ad957d733578c7159e","commits":["57863b95d704918231f792f1771c541ab636adea","04614c0ec868303487821065dd6f3aa03ae85429"],"user_facing":true,"description":"**New feature.** `--profile` flag for claudewheel profile selection — sets `CLAUDE_CONFIG_DIR` and OAuth token for the Claude subprocess.","type":"feature"}
+{"format_version":2,"id":"18dc880d1075b5c8984b4255f913460c88bba6725e97ecc4","commits":["028005b40b08ce6388dfdb630c6c83a8f518c11d"],"user_facing":false}
+{"format_version":2,"id":"18dc880d10762bee0395bc02fc584d3d864e7d023e42003e","commits":["8ecceff01aabf5dc14b7a122f5e2cff4c7cdecaf"],"user_facing":false}
+{"format_version":2,"id":"18dc880d1076a4943f8cf8937caa46e0967dcc388af07690","commits":["fd5d0cc6b016a6ace829efaefe6872ec676d777c"],"user_facing":false}
+{"format_version":2,"id":"18dc880d10771318b4368add54854c23ad1d3bb06e613d64","commits":["990919b8f06577d72da36d6ae00c153d34e1b765"],"user_facing":false}
+{"format_version":2,"id":"18dc880d10778174c1cf6c3d7dd7491ca152eaee4c9cf80b","commits":["dc8f6d05d16824300c593ff1295752b4b2e2101f"],"user_facing":false}
+{"format_version":2,"id":"18dc880d1077efda2c1255cfaf0041aca4676d282fa7428b","commits":["25bf86f08fc52721e72d1efc1be9e01090aaa4b7"],"user_facing":false}
+{"format_version":2,"id":"18dc880d10785ee191e3ea2785c54f91996f52a09385839d","commits":["f3f8c903e39d40bbd8ef222f7b92b99a24c4fe0a"],"user_facing":false}
+{"format_version":2,"id":"18dc880d1078ceebb9567d7137894ea584f68a62ea807955","commits":["8980eaab69a4cdfe3ba48804fbc9fa6da4dcdc32"],"user_facing":false}
+{"format_version":2,"id":"18dc880d1079409b165722717e894e1b8e7d948f1a4683a8","commits":["27d674a3629d565e91db505e5e0c66c9dfd2b065"],"user_facing":false}
+{"format_version":2,"id":"18dc880d1079adfdf3b8da43d3a647c5b26d90ece86b23fb","commits":["341ff8f00335e3a006d94ecbe0647ed133a9d484"],"user_facing":false}

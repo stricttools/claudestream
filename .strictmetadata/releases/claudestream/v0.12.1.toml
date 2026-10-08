@@ -1,0 +1,14 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+# Version bump type: patch, minor, or major
+bump = "patch"
+# Short description of this release (required)
+description = "Fix uv.lock local paths and Usage struct documentation"
+# Optional context explaining why these changes were made
+context = ""
+include = ["pypi", "npm"]
+exclude = []
+release_commit = "1a7ffbc5576a29acbc6fe131e65d2fd8c9930074"
+
+[released_trees]
+"." = "423220fe2c4afa2843ddd247981addd144a56222"

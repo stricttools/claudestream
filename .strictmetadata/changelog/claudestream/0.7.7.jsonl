@@ -1,0 +1,5 @@
+{"format_version":2,"id":"18dc880d10bc4f806307446c1456441ba32594c465fa2b0b","commits":["69ce8f7a119cca32cdf5f7f91d8e0c4f6e4f30d6"],"user_facing":true,"description":"**`--from-pr` CLI flag.** All commands (send, stream, events, repl, ask) now accept `--from-pr` to resume from a PR-linked session.","type":"feature"}
+{"format_version":2,"id":"18dc880d10bd88edb58730d8fa8b4f03a1035473de39e287","commits":["8f5ee953b1b3c354e0580e027f1da8d20573b4dc"],"user_facing":false}
+{"format_version":2,"id":"18dc880d10be18e75e3114e1e02045f282503897b313450c","commits":["91332bb735000db55e3a1b3ad1b1a6885f9ee597"],"user_facing":false}
+{"format_version":2,"id":"18dc880d10be79afb19a7977eec54f458eaf43639c3a5660","commits":["9f1a6b3cbcf23548f4e0b0a5369b635c6a67cd36"],"user_facing":false}
+{"format_version":2,"id":"18dc880d10bee2a495aed8041adc42c1b8d48dddad15608e","commits":["b7a72de9bdce7451b121ffd9bf58208a53fb44dd","36a9ddc9d84729e08094f348d779c796bf2ddc57"],"user_facing":false}

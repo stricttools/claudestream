@@ -1,0 +1,14 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+# Version bump type: patch, minor, or major
+bump = "minor"
+# Short description of this release (required)
+description = "Liveness probe, MCP multi-server handshake fix"
+# Optional context explaining why these changes were made
+context = ""
+include = ["pypi", "npm"]
+exclude = []
+release_commit = "34fdb924fcdbd1abfa719f379e5a60203e79b972"
+
+[released_trees]
+"." = "66fde8b79b87711bbb8b32e4d027e32613e9b428"

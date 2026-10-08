@@ -1,0 +1,5 @@
+{"format_version":2,"id":"18dc880d1037583391b5823a4fe74f7a9fe2641ab86074f6","commits":["4eaf879aadaee2abadaaf86c25af561c6166b1c4","579e16e2aed1095c2738abf79c0cb33479822268"],"user_facing":true,"description":"**New.** Transparent subprocess retry when stuck detection triggers, preventing session hangs.","type":"feature"}
+{"format_version":2,"id":"18dc880d10381b17fd011eba8b9e47179cc354690852c944","commits":["982d23071c91f0ddcef5c805e0acb4ba97450e42"],"user_facing":true,"description":"**New.** Structured logging for liveness probe events, subprocess retry, restart, and session start.","type":"feature"}
+{"format_version":2,"id":"18dc880d1038ede806c09eacac264ab7ac27d50a8b6ccec4","commits":["43c10df54b12274201a4c812975c8dc97bedddde","3a09c10b0bb13d0c520190220639d6117648f62b"],"user_facing":false}
+{"format_version":2,"id":"18dc880d1039721a5d8b5f55e0d8475c8458e3c77cc6251d","commits":["6f4955ac66349ee87cab359e838f7d7ab400d740"],"user_facing":false}
+{"format_version":2,"id":"18dc880d1039f90ab88205fde2834bb0ace2c753048b2649","commits":["c6665a888225e33469731ed90783549df5e98989"],"user_facing":false}

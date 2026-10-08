@@ -1,0 +1,11 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+bump = "patch"
+include = ["pypi"]
+exclude = []
+# description reconstructed by `rlsbl release backfill` from github-release:v0.7.1
+description = "**File write tracking.** New `FileWrite` and `FileEdit` derived events emitted when Claude writes or edits files. `session.files_modified` accumulates all modified paths with absolute path resolution."
+release_commit = "001623ad1b5c3f5a1fa480c06328ac10880ec255"
+
+[released_trees]
+"." = "bc52a1421a30d1db1abc80df2100e5681956d678"

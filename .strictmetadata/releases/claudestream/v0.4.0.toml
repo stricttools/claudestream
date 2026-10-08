@@ -1,0 +1,11 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+bump = "minor"
+include = ["pypi"]
+exclude = []
+# description reconstructed by `rlsbl release backfill` from github-release:v0.4.0
+description = "**Breaking.** `--profile` and `--model` are now required flags on all commands. No implicit defaults."
+release_commit = "5c4631f78d016fb96226e5a1288a663a2fbadd36"
+
+[released_trees]
+"." = "154847dc847e4b49ee7753eeb2493073b5cf705d"

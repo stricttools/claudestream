@@ -1,3 +1,0 @@
-{"format_version":1,"commits":["d08e4ef68d1802778159a695f453e16d71231241"],"user_facing":false}
-{"format_version":1,"commits":["106cf3e62febf407811d9ce453fbdd1396e56d66"],"user_facing":true,"description":"**Fix.** `send` command no longer prints response text twice.","type":"fix"}
-{"format_version":1,"commits":["1e78e35f4540912922c94fb1672f00038099e7a9"],"user_facing":false}

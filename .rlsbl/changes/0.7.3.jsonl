@@ -1,4 +1,0 @@
-{"format_version":1,"commits":["de444d7950dd4db405764902f3be8d5996fa84a4"],"user_facing":true,"description":"**Agent discovery from custom paths and packages.** `discover_agents()` now accepts `paths=` for custom directories and `packages=` for Python package resources via `importlib.resources`. Deduplicates by name with warnings on conflicts. `load_agent()` gains a `cwd` parameter for consistent bare name resolution.","type":"feature"}
-{"format_version":1,"commits":["642b9a4dd2a29c6f8d1dcc8705dca69e943af7e1","6dbb0b195ea10f4670620c1403e640d7f1f7a5fd"],"user_facing":false}
-{"format_version":1,"commits":["5efa7c7b7cef160b70566fc89936d30676cc5c91"],"user_facing":false}
-{"format_version":1,"commits":["24bb09230d70a0a8c8743999c31562592124cd36","f46efdeffb55a36c25befcad8edd3bf03e913c9c","b51d7656ab2f9e31a0119272dedb9bdb2d9d4575"],"user_facing":false}

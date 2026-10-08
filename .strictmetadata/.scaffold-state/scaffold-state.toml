@@ -1,0 +1,8 @@
+format_version = 1
+rlsbl_version = "0.121.5"
+
+[files]
+".github/workflows/ci-pypi.yml" = "6555e40a1ddb22734b69f0d7048ce016f77623f92226f1011b9e3c754c27074e"
+".github/workflows/publish.yml" = "027d4ed97dbc4c23698107c67d64e281e30a8cb808da401a32204288f24fcdde"
+".gitignore" = "d098d91ba8e62d415a9398034419dbfe645399251790b698cf432cad5d46601e"
+".npmignore" = "7c0eea9785c0318aeb39bf8b670ce8384f4a5b812fde69ce23d7d018057325a3"

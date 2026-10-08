@@ -1,0 +1,11 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+bump = "patch"
+include = ["pypi"]
+exclude = []
+# description reconstructed by `rlsbl release backfill` from github-release:v0.7.2
+description = "**Tool context injection.** `@tool(\"server\", inject=[\"ctx\"])` explicitly declares parameters injected from `SessionConfig.tool_context`. Injected params are hidden from the model's schema. Hard error when context is required but missing."
+release_commit = "be89c040fb9a669e8670d0f595dd882e0cfd3c4c"
+
+[released_trees]
+"." = "77e5fd3b9234ec335ed1579f1279d9239e9c01c7"

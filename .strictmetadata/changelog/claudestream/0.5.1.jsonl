@@ -1,0 +1,4 @@
+{"format_version":2,"id":"18dc880d108bd35e01efaee85d3344bfa1e2858bc07faff5","commits":["a7bec7ef164b48b2e791690c84403858e537b8d0"],"user_facing":true,"description":"**Fix.** `--system-prompt` no longer adds `--bare`, which was blocking OAuth authentication. Uses `--append-system-prompt` instead.","type":"fix"}
+{"format_version":2,"id":"18dc880d108c33a3469a0218e20741e4b3dd91d4e1eb8395","commits":["634486aa1496542e3bed22c953c0bb34c7d5a31d","fe5b1c182636a4285eb85b01e322a495048f98d3"],"user_facing":false}
+{"format_version":2,"id":"18dc880d108c7910c7ddfaf5bfbc4f97bd3acc8d721e1d91","commits":["c2befabdd4b7da5138086ea03bb5600841507a5d"],"user_facing":false}
+{"format_version":2,"id":"18dc880d108cb4aafe0726ca567347f3931a3f049aeb06ea","commits":["4607180425d9dd2efcbddf01d4cd8413ae36b205"],"user_facing":false}

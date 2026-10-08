@@ -1,0 +1,11 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+bump = "patch"
+include = ["pypi"]
+exclude = []
+# description reconstructed by `rlsbl release backfill` from github-release:v0.6.1
+description = "**Session resumption.** New `resume_session_id` parameter and `--resume` CLI flag to continue a previous Claude Code session."
+release_commit = "61a61d7fa0594c74cb105fef09b2e7f04ce8a7f3"
+
+[released_trees]
+"." = "8e647f86de6f1698467c575246be27b9b924de33"
