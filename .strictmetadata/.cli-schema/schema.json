@@ -1,0 +1,1111 @@
+{
+  "schema_version": 2,
+  "defaults": {
+    "schema_version": 2,
+    "app": {
+      "env_prefix": null,
+      "config": false,
+      "config_format": "json",
+      "config_path": null,
+      "config_conflict_mode": "cli-wins",
+      "proc_observe_allowlist": [],
+      "global_flags": [],
+      "commands": {},
+      "groups": {},
+      "deprecated": {},
+      "tag_contracts": {},
+      "checks": {},
+      "config_fields": {},
+      "infra": {}
+    },
+    "flag": {
+      "short": null,
+      "env": null,
+      "env_separator": null,
+      "prefixed": true,
+      "choices": null,
+      "elect_by": null,
+      "unique": false,
+      "conflict_mode": null,
+      "negatable": null,
+      "nullable": false
+    },
+    "arg": {
+      "variadic": false,
+      "choices": null
+    },
+    "choice": {
+      "flags": []
+    },
+    "choice_record": {
+      "help": null
+    },
+    "command": {
+      "consequential": false,
+      "dry_run_supported": true,
+      "dry_run_unsupported_reason": null,
+      "update_of": null,
+      "write_mode": null,
+      "payload_schema": null,
+      "owns_stdout": false,
+      "passthrough": false,
+      "flags": [],
+      "flag_sets": [],
+      "args": [],
+      "args_after_separator": null,
+      "tags": [],
+      "constraints": [],
+      "hidden": false,
+      "interactive": false,
+      "config_fields": [],
+      "grants": [],
+      "forwarding": null,
+      "requires": []
+    },
+    "group": {
+      "commands": {},
+      "groups": {},
+      "deprecated": {},
+      "tags": [],
+      "hidden": false
+    },
+    "config_field": {
+      "default": null,
+      "bound_commands": []
+    },
+    "check": {
+      "scope": null
+    },
+    "infra": {
+      "roots": [],
+      "handshakes": [],
+      "connections": []
+    }
+  },
+  "project_id": "github.com/stricttools/claudestream",
+  "name": "claudestream",
+  "version": "dev",
+  "help": "Drive Claude Code from the command line: start a session under a claudewheel profile, send one prompt, and print the reply as final text, live text, a detailed rendering, or the raw stream-json lines; run agent definitions; and check the installation",
+  "commands": {
+    "ask": {
+      "name": "ask",
+      "help": "Send one prompt to Claude Code and print only the reply's final text on stdout; with --json, the reply and its metadata are the document's payload. A turn that Claude Code ends with an error exits 1 with the result text on stderr",
+      "effect": "mutating",
+      "dry_run_supported": false,
+      "dry_run_unsupported_reason": "Claude Code runs as a subprocess whose file edits, commands, and API spend happen outside the effects handle, so a dry run could record none of them",
+      "payload_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "api_error_status": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "cost_usd": {
+            "type": "number"
+          },
+          "duration_api_ms": {
+            "type": "number"
+          },
+          "duration_ms": {
+            "type": "number"
+          },
+          "is_error": {
+            "type": "boolean"
+          },
+          "num_turns": {
+            "type": "integer"
+          },
+          "result": {
+            "type": "string"
+          },
+          "session_id": {
+            "type": "string"
+          },
+          "stop_reason": {
+            "type": "string"
+          },
+          "subtype": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "usage": {
+            "additionalProperties": false,
+            "properties": {
+              "cache_creation_input_tokens": {
+                "type": "integer"
+              },
+              "cache_read_input_tokens": {
+                "type": "integer"
+              },
+              "input_tokens": {
+                "type": "integer"
+              },
+              "output_tokens": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "input_tokens",
+              "output_tokens",
+              "cache_creation_input_tokens",
+              "cache_read_input_tokens"
+            ],
+            "type": [
+              "object",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "text",
+          "session_id",
+          "usage",
+          "cost_usd",
+          "duration_ms",
+          "duration_api_ms",
+          "is_error",
+          "num_turns",
+          "stop_reason",
+          "result",
+          "api_error_status",
+          "subtype"
+        ],
+        "type": "object"
+      },
+      "flags": [
+        {
+          "name": "model",
+          "help": "Claude model for the session, passed to Claude Code as --model (an alias such as sonnet or opus, or a full model ID)",
+          "value_schema": {
+            "type": "string"
+          },
+          "short": "m",
+          "presence": "required"
+        },
+        {
+          "name": "profile",
+          "help": "claudewheel profile the session runs under: Claude Code is started as `claudewheel profile exec --name <profile> -- <claude> ...`, which gives it the profile's environment",
+          "value_schema": {
+            "type": "string"
+          },
+          "presence": "required"
+        },
+        {
+          "name": "prompt-source",
+          "help": "Where the prompt comes from: pass --prompt or --prompt-from-stdin",
+          "presence": "required",
+          "choices": [
+            {
+              "name": "prompt",
+              "help": "send this flag's value as the prompt",
+              "flags": [
+                {
+                  "name": "value",
+                  "help": "Prompt text to send",
+                  "value_schema": {
+                    "type": "string"
+                  },
+                  "presence": "required"
+                }
+              ]
+            },
+            {
+              "name": "prompt-from-stdin",
+              "help": "read the prompt from standard input"
+            }
+          ],
+          "elect_by": "member-flags"
+        },
+        {
+          "name": "session",
+          "help": "Which Claude Code session to use: pass --new-session, --resume, or --continue-session",
+          "presence": "required",
+          "choices": [
+            {
+              "name": "new-session",
+              "help": "start a new session"
+            },
+            {
+              "name": "resume",
+              "help": "resume the session with this ID",
+              "flags": [
+                {
+                  "name": "value",
+                  "help": "ID of the session to resume",
+                  "value_schema": {
+                    "type": "string"
+                  },
+                  "presence": "required"
+                }
+              ]
+            },
+            {
+              "name": "continue-session",
+              "help": "continue the most recent session in the working directory"
+            }
+          ],
+          "elect_by": "member-flags"
+        },
+        {
+          "name": "skip-permissions",
+          "help": "Required either way: --skip-permissions runs Claude Code with --dangerously-skip-permissions, so no tool use is checked; --no-skip-permissions keeps Claude Code's permission checks, so tools that need permission are refused",
+          "value_schema": {
+            "type": "boolean"
+          },
+          "presence": "required",
+          "negatable": true
+        },
+        {
+          "name": "cwd",
+          "help": "Working directory for Claude Code; when omitted, Claude Code runs in this process's working directory",
+          "value_schema": {
+            "type": "string"
+          },
+          "presence": "optional"
+        },
+        {
+          "name": "system-prompt",
+          "help": "System prompt for the session, passed to Claude Code as --system-prompt; when omitted, Claude Code uses its own",
+          "value_schema": {
+            "type": "string"
+          },
+          "short": "s",
+          "presence": "optional"
+        },
+        {
+          "name": "from-pr",
+          "help": "GitHub pull request to load into the session, passed to Claude Code as --from-pr; when omitted, none is loaded",
+          "value_schema": {
+            "type": "string"
+          },
+          "presence": "optional"
+        },
+        {
+          "name": "claude-binary",
+          "help": "Absolute path of the Claude Code executable; when omitted, `claude` is looked up on PATH",
+          "value_schema": {
+            "type": "string"
+          },
+          "presence": "optional"
+        },
+        {
+          "name": "claudewheel-binary",
+          "help": "Absolute path of the claudewheel executable; when omitted, `claudewheel` is looked up on PATH",
+          "value_schema": {
+            "type": "string"
+          },
+          "presence": "optional"
+        },
+        {
+          "name": "color",
+          "help": "--color colors the output and --no-color does not; when neither is passed, stdout and stderr are each colored only when they are a terminal and NO_COLOR is unset or empty",
+          "value_schema": {
+            "type": "boolean"
+          },
+          "presence": "optional",
+          "negatable": true
+        },
+        {
+          "name": "footer",
+          "help": "--footer writes a line with the turn's duration and cost to stderr after the reply and --no-footer does not; when neither is passed, the line is written (events with --json never writes it: its stderr carries the --json document)",
+          "value_schema": {
+            "type": "boolean"
+          },
+          "presence": "optional",
+          "negatable": true
+        }
+      ]
+    },
+    "stream": {
+      "name": "stream",
+      "help": "Send one prompt to Claude Code and write the reply's text to stdout as it arrives, with a one-line marker on stderr for each thinking block, tool call, tool result, and notice. A turn that Claude Code ends with an error exits 1 with the result text on stderr",
+      "effect": "mutating",
+      "dry_run_supported": false,
+      "dry_run_unsupported_reason": "Claude Code runs as a subprocess whose file edits, commands, and API spend happen outside the effects handle, so a dry run could record none of them",
+      "flags": [
+        {
+          "name": "model",
+          "help": "Claude model for the session, passed to Claude Code as --model (an alias such as sonnet or opus, or a full model ID)",
+          "value_schema": {
+            "type": "string"
+          },
+          "short": "m",
+          "presence": "required"
+        },
+        {
+          "name": "profile",
+          "help": "claudewheel profile the session runs under: Claude Code is started as `claudewheel profile exec --name <profile> -- <claude> ...`, which gives it the profile's environment",
+          "value_schema": {
+            "type": "string"
+          },
+          "presence": "required"
+        },
+        {
+          "name": "prompt-source",
+          "help": "Where the prompt comes from: pass --prompt or --prompt-from-stdin",
+          "presence": "required",
+          "choices": [
+            {
+              "name": "prompt",
+              "help": "send this flag's value as the prompt",
+              "flags": [
+                {
+                  "name": "value",
+                  "help": "Prompt text to send",
+                  "value_schema": {
+                    "type": "string"
+                  },
+                  "presence": "required"
+                }
+              ]
+            },
+            {
+              "name": "prompt-from-stdin",
+              "help": "read the prompt from standard input"
+            }
+          ],
+          "elect_by": "member-flags"
+        },
+        {
+          "name": "session",
+          "help": "Which Claude Code session to use: pass --new-session, --resume, or --continue-session",
+          "presence": "required",
+          "choices": [
+            {
+              "name": "new-session",
+              "help": "start a new session"
+            },
+            {
+              "name": "resume",
+              "help": "resume the session with this ID",
+              "flags": [
+                {
+                  "name": "value",
+                  "help": "ID of the session to resume",
+                  "value_schema": {
+                    "type": "string"
+                  },
+                  "presence": "required"
+                }
+              ]
+            },
+            {
+              "name": "continue-session",
+              "help": "continue the most recent session in the working directory"
+            }
+          ],
+          "elect_by": "member-flags"
+        },
+        {
+          "name": "skip-permissions",
+          "help": "Required either way: --skip-permissions runs Claude Code with --dangerously-skip-permissions, so no tool use is checked; --no-skip-permissions keeps Claude Code's permission checks, so tools that need permission are refused",
+          "value_schema": {
+            "type": "boolean"
+          },
+          "presence": "required",
+          "negatable": true
+        },
+        {
+          "name": "cwd",
+          "help": "Working directory for Claude Code; when omitted, Claude Code runs in this process's working directory",
+          "value_schema": {
+            "type": "string"
+          },
+          "presence": "optional"
+        },
+        {
+          "name": "system-prompt",
+          "help": "System prompt for the session, passed to Claude Code as --system-prompt; when omitted, Claude Code uses its own",
+          "value_schema": {
+            "type": "string"
+          },
+          "short": "s",
+          "presence": "optional"
+        },
+        {
+          "name": "from-pr",
+          "help": "GitHub pull request to load into the session, passed to Claude Code as --from-pr; when omitted, none is loaded",
+          "value_schema": {
+            "type": "string"
+          },
+          "presence": "optional"
+        },
+        {
+          "name": "claude-binary",
+          "help": "Absolute path of the Claude Code executable; when omitted, `claude` is looked up on PATH",
+          "value_schema": {
+            "type": "string"
+          },
+          "presence": "optional"
+        },
+        {
+          "name": "claudewheel-binary",
+          "help": "Absolute path of the claudewheel executable; when omitted, `claudewheel` is looked up on PATH",
+          "value_schema": {
+            "type": "string"
+          },
+          "presence": "optional"
+        },
+        {
+          "name": "color",
+          "help": "--color colors the output and --no-color does not; when neither is passed, stdout and stderr are each colored only when they are a terminal and NO_COLOR is unset or empty",
+          "value_schema": {
+            "type": "boolean"
+          },
+          "presence": "optional",
+          "negatable": true
+        },
+        {
+          "name": "footer",
+          "help": "--footer writes a line with the turn's duration and cost to stderr after the reply and --no-footer does not; when neither is passed, the line is written (events with --json never writes it: its stderr carries the --json document)",
+          "value_schema": {
+            "type": "boolean"
+          },
+          "presence": "optional",
+          "negatable": true
+        }
+      ]
+    },
+    "send": {
+      "name": "send",
+      "help": "Send one prompt to Claude Code and render the whole turn on stdout: the reply's text as it arrives, thinking, each tool call with its input as JSON, and each tool result; notices go to stderr. A turn that Claude Code ends with an error exits 1 with the result text on stderr",
+      "effect": "mutating",
+      "dry_run_supported": false,
+      "dry_run_unsupported_reason": "Claude Code runs as a subprocess whose file edits, commands, and API spend happen outside the effects handle, so a dry run could record none of them",
+      "flags": [
+        {
+          "name": "model",
+          "help": "Claude model for the session, passed to Claude Code as --model (an alias such as sonnet or opus, or a full model ID)",
+          "value_schema": {
+            "type": "string"
+          },
+          "short": "m",
+          "presence": "required"
+        },
+        {
+          "name": "profile",
+          "help": "claudewheel profile the session runs under: Claude Code is started as `claudewheel profile exec --name <profile> -- <claude> ...`, which gives it the profile's environment",
+          "value_schema": {
+            "type": "string"
+          },
+          "presence": "required"
+        },
+        {
+          "name": "prompt-source",
+          "help": "Where the prompt comes from: pass --prompt or --prompt-from-stdin",
+          "presence": "required",
+          "choices": [
+            {
+              "name": "prompt",
+              "help": "send this flag's value as the prompt",
+              "flags": [
+                {
+                  "name": "value",
+                  "help": "Prompt text to send",
+                  "value_schema": {
+                    "type": "string"
+                  },
+                  "presence": "required"
+                }
+              ]
+            },
+            {
+              "name": "prompt-from-stdin",
+              "help": "read the prompt from standard input"
+            }
+          ],
+          "elect_by": "member-flags"
+        },
+        {
+          "name": "session",
+          "help": "Which Claude Code session to use: pass --new-session, --resume, or --continue-session",
+          "presence": "required",
+          "choices": [
+            {
+              "name": "new-session",
+              "help": "start a new session"
+            },
+            {
+              "name": "resume",
+              "help": "resume the session with this ID",
+              "flags": [
+                {
+                  "name": "value",
+                  "help": "ID of the session to resume",
+                  "value_schema": {
+                    "type": "string"
+                  },
+                  "presence": "required"
+                }
+              ]
+            },
+            {
+              "name": "continue-session",
+              "help": "continue the most recent session in the working directory"
+            }
+          ],
+          "elect_by": "member-flags"
+        },
+        {
+          "name": "skip-permissions",
+          "help": "Required either way: --skip-permissions runs Claude Code with --dangerously-skip-permissions, so no tool use is checked; --no-skip-permissions keeps Claude Code's permission checks, so tools that need permission are refused",
+          "value_schema": {
+            "type": "boolean"
+          },
+          "presence": "required",
+          "negatable": true
+        },
+        {
+          "name": "cwd",
+          "help": "Working directory for Claude Code; when omitted, Claude Code runs in this process's working directory",
+          "value_schema": {
+            "type": "string"
+          },
+          "presence": "optional"
+        },
+        {
+          "name": "system-prompt",
+          "help": "System prompt for the session, passed to Claude Code as --system-prompt; when omitted, Claude Code uses its own",
+          "value_schema": {
+            "type": "string"
+          },
+          "short": "s",
+          "presence": "optional"
+        },
+        {
+          "name": "from-pr",
+          "help": "GitHub pull request to load into the session, passed to Claude Code as --from-pr; when omitted, none is loaded",
+          "value_schema": {
+            "type": "string"
+          },
+          "presence": "optional"
+        },
+        {
+          "name": "claude-binary",
+          "help": "Absolute path of the Claude Code executable; when omitted, `claude` is looked up on PATH",
+          "value_schema": {
+            "type": "string"
+          },
+          "presence": "optional"
+        },
+        {
+          "name": "claudewheel-binary",
+          "help": "Absolute path of the claudewheel executable; when omitted, `claudewheel` is looked up on PATH",
+          "value_schema": {
+            "type": "string"
+          },
+          "presence": "optional"
+        },
+        {
+          "name": "color",
+          "help": "--color colors the output and --no-color does not; when neither is passed, stdout and stderr are each colored only when they are a terminal and NO_COLOR is unset or empty",
+          "value_schema": {
+            "type": "boolean"
+          },
+          "presence": "optional",
+          "negatable": true
+        },
+        {
+          "name": "footer",
+          "help": "--footer writes a line with the turn's duration and cost to stderr after the reply and --no-footer does not; when neither is passed, the line is written (events with --json never writes it: its stderr carries the --json document)",
+          "value_schema": {
+            "type": "boolean"
+          },
+          "presence": "optional",
+          "negatable": true
+        }
+      ]
+    },
+    "events": {
+      "name": "events",
+      "help": "Send one prompt to Claude Code and copy every line Claude Code writes to its stdout (stream-json) to stdout verbatim, for debugging the protocol. A turn that Claude Code ends with an error exits 1 with the result text on stderr",
+      "effect": "mutating",
+      "dry_run_supported": false,
+      "dry_run_unsupported_reason": "Claude Code runs as a subprocess whose file edits, commands, and API spend happen outside the effects handle, so a dry run could record none of them",
+      "owns_stdout": true,
+      "flags": [
+        {
+          "name": "model",
+          "help": "Claude model for the session, passed to Claude Code as --model (an alias such as sonnet or opus, or a full model ID)",
+          "value_schema": {
+            "type": "string"
+          },
+          "short": "m",
+          "presence": "required"
+        },
+        {
+          "name": "profile",
+          "help": "claudewheel profile the session runs under: Claude Code is started as `claudewheel profile exec --name <profile> -- <claude> ...`, which gives it the profile's environment",
+          "value_schema": {
+            "type": "string"
+          },
+          "presence": "required"
+        },
+        {
+          "name": "prompt-source",
+          "help": "Where the prompt comes from: pass --prompt or --prompt-from-stdin",
+          "presence": "required",
+          "choices": [
+            {
+              "name": "prompt",
+              "help": "send this flag's value as the prompt",
+              "flags": [
+                {
+                  "name": "value",
+                  "help": "Prompt text to send",
+                  "value_schema": {
+                    "type": "string"
+                  },
+                  "presence": "required"
+                }
+              ]
+            },
+            {
+              "name": "prompt-from-stdin",
+              "help": "read the prompt from standard input"
+            }
+          ],
+          "elect_by": "member-flags"
+        },
+        {
+          "name": "session",
+          "help": "Which Claude Code session to use: pass --new-session, --resume, or --continue-session",
+          "presence": "required",
+          "choices": [
+            {
+              "name": "new-session",
+              "help": "start a new session"
+            },
+            {
+              "name": "resume",
+              "help": "resume the session with this ID",
+              "flags": [
+                {
+                  "name": "value",
+                  "help": "ID of the session to resume",
+                  "value_schema": {
+                    "type": "string"
+                  },
+                  "presence": "required"
+                }
+              ]
+            },
+            {
+              "name": "continue-session",
+              "help": "continue the most recent session in the working directory"
+            }
+          ],
+          "elect_by": "member-flags"
+        },
+        {
+          "name": "skip-permissions",
+          "help": "Required either way: --skip-permissions runs Claude Code with --dangerously-skip-permissions, so no tool use is checked; --no-skip-permissions keeps Claude Code's permission checks, so tools that need permission are refused",
+          "value_schema": {
+            "type": "boolean"
+          },
+          "presence": "required",
+          "negatable": true
+        },
+        {
+          "name": "cwd",
+          "help": "Working directory for Claude Code; when omitted, Claude Code runs in this process's working directory",
+          "value_schema": {
+            "type": "string"
+          },
+          "presence": "optional"
+        },
+        {
+          "name": "system-prompt",
+          "help": "System prompt for the session, passed to Claude Code as --system-prompt; when omitted, Claude Code uses its own",
+          "value_schema": {
+            "type": "string"
+          },
+          "short": "s",
+          "presence": "optional"
+        },
+        {
+          "name": "from-pr",
+          "help": "GitHub pull request to load into the session, passed to Claude Code as --from-pr; when omitted, none is loaded",
+          "value_schema": {
+            "type": "string"
+          },
+          "presence": "optional"
+        },
+        {
+          "name": "claude-binary",
+          "help": "Absolute path of the Claude Code executable; when omitted, `claude` is looked up on PATH",
+          "value_schema": {
+            "type": "string"
+          },
+          "presence": "optional"
+        },
+        {
+          "name": "claudewheel-binary",
+          "help": "Absolute path of the claudewheel executable; when omitted, `claudewheel` is looked up on PATH",
+          "value_schema": {
+            "type": "string"
+          },
+          "presence": "optional"
+        },
+        {
+          "name": "color",
+          "help": "--color colors the output and --no-color does not; when neither is passed, stdout and stderr are each colored only when they are a terminal and NO_COLOR is unset or empty",
+          "value_schema": {
+            "type": "boolean"
+          },
+          "presence": "optional",
+          "negatable": true
+        },
+        {
+          "name": "footer",
+          "help": "--footer writes a line with the turn's duration and cost to stderr after the reply and --no-footer does not; when neither is passed, the line is written (events with --json never writes it: its stderr carries the --json document)",
+          "value_schema": {
+            "type": "boolean"
+          },
+          "presence": "optional",
+          "negatable": true
+        }
+      ]
+    },
+    "doctor": {
+      "name": "doctor",
+      "help": "Check what a session needs: the claude path and its version against the minimum 2.0.0 (`claude -v`, within 2s), and the claudewheel path; with --profile, also run `claudewheel profile exec --name <profile> -- <claude> -v` (within 10s). Prints one [ok] or [FAIL] line per check and exits 1 when any check fails",
+      "effect": "read_only",
+      "flags": [
+        {
+          "name": "profile",
+          "help": "claudewheel profile to check by starting Claude Code under it; when omitted, no profile is checked",
+          "value_schema": {
+            "type": "string"
+          },
+          "presence": "optional"
+        },
+        {
+          "name": "claude-binary",
+          "help": "Absolute path of the Claude Code executable to check; when omitted, `claude` is looked up on PATH",
+          "value_schema": {
+            "type": "string"
+          },
+          "presence": "optional"
+        },
+        {
+          "name": "claudewheel-binary",
+          "help": "Absolute path of the claudewheel executable to check; when omitted, `claudewheel` is looked up on PATH",
+          "value_schema": {
+            "type": "string"
+          },
+          "presence": "optional"
+        }
+      ]
+    }
+  },
+  "groups": {
+    "agent": {
+      "name": "agent",
+      "help": "Run and inspect agent definitions: strict TOML files at .claudestream/agents/<name>.agent.toml (format_version = 2) that declare a prompt template with {variable} placeholders and, optionally, a model, tools, a sandbox, budget thresholds, MCP servers, and stream options",
+      "commands": {
+        "run": {
+          "name": "run",
+          "help": "Run one prompt through an agent definition and write the reply's text to stdout as it arrives, with markers on stderr as the stream command writes them. The agent's resolved prompt template becomes the system prompt, its name the session name, and its sandbox, budget, MCP, and stream tables replace the defaults. With --agent-name, the agents directory is searched under --cwd, or under the current directory when --cwd is omitted. Agents that declare tools are refused: their handlers exist only in Go programs that call the agent package. A turn that Claude Code ends with an error exits 1 with the result text on stderr",
+          "effect": "mutating",
+          "dry_run_supported": false,
+          "dry_run_unsupported_reason": "Claude Code runs as a subprocess whose file edits, commands, and API spend happen outside the effects handle, so a dry run could record none of them",
+          "flags": [
+            {
+              "name": "agent-definition",
+              "help": "Which agent definition to load: pass --agent-name or --agent-file",
+              "presence": "required",
+              "choices": [
+                {
+                  "name": "agent-name",
+                  "help": "load the agent by name from the agents directory",
+                  "flags": [
+                    {
+                      "name": "value",
+                      "help": "Name of the agent defined in .claudestream/agents/<name>.agent.toml",
+                      "value_schema": {
+                        "type": "string"
+                      },
+                      "presence": "required"
+                    }
+                  ]
+                },
+                {
+                  "name": "agent-file",
+                  "help": "load the agent from this file",
+                  "flags": [
+                    {
+                      "name": "value",
+                      "help": "Path of an agent file named <name>.agent.toml",
+                      "value_schema": {
+                        "type": "string"
+                      },
+                      "presence": "required"
+                    }
+                  ]
+                }
+              ],
+              "elect_by": "member-flags"
+            },
+            {
+              "name": "var",
+              "help": "Template variable as key=value, filling the {key} placeholder of the agent's prompt template; repeat it once per variable",
+              "value_schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "presence": "optional"
+            },
+            {
+              "name": "model",
+              "help": "Claude model for the session (an alias such as sonnet or opus, or a full model ID); required when the agent declares no model, and refused when it declares one",
+              "value_schema": {
+                "type": "string"
+              },
+              "short": "m",
+              "presence": "optional"
+            },
+            {
+              "name": "profile",
+              "help": "claudewheel profile the session runs under: Claude Code is started as `claudewheel profile exec --name <profile> -- <claude> ...`, which gives it the profile's environment",
+              "value_schema": {
+                "type": "string"
+              },
+              "presence": "required"
+            },
+            {
+              "name": "prompt-source",
+              "help": "Where the prompt comes from: pass --prompt or --prompt-from-stdin",
+              "presence": "required",
+              "choices": [
+                {
+                  "name": "prompt",
+                  "help": "send this flag's value as the prompt",
+                  "flags": [
+                    {
+                      "name": "value",
+                      "help": "Prompt text to send",
+                      "value_schema": {
+                        "type": "string"
+                      },
+                      "presence": "required"
+                    }
+                  ]
+                },
+                {
+                  "name": "prompt-from-stdin",
+                  "help": "read the prompt from standard input"
+                }
+              ],
+              "elect_by": "member-flags"
+            },
+            {
+              "name": "session",
+              "help": "Which Claude Code session to use: pass --new-session, --resume, or --continue-session",
+              "presence": "required",
+              "choices": [
+                {
+                  "name": "new-session",
+                  "help": "start a new session"
+                },
+                {
+                  "name": "resume",
+                  "help": "resume the session with this ID",
+                  "flags": [
+                    {
+                      "name": "value",
+                      "help": "ID of the session to resume",
+                      "value_schema": {
+                        "type": "string"
+                      },
+                      "presence": "required"
+                    }
+                  ]
+                },
+                {
+                  "name": "continue-session",
+                  "help": "continue the most recent session in the working directory"
+                }
+              ],
+              "elect_by": "member-flags"
+            },
+            {
+              "name": "skip-permissions",
+              "help": "Required either way: --skip-permissions runs Claude Code with --dangerously-skip-permissions, so no tool use is checked; --no-skip-permissions keeps Claude Code's permission checks, so tools that need permission are refused",
+              "value_schema": {
+                "type": "boolean"
+              },
+              "presence": "required",
+              "negatable": true
+            },
+            {
+              "name": "cwd",
+              "help": "Working directory for Claude Code; when omitted, Claude Code runs in this process's working directory",
+              "value_schema": {
+                "type": "string"
+              },
+              "presence": "optional"
+            },
+            {
+              "name": "from-pr",
+              "help": "GitHub pull request to load into the session, passed to Claude Code as --from-pr; when omitted, none is loaded",
+              "value_schema": {
+                "type": "string"
+              },
+              "presence": "optional"
+            },
+            {
+              "name": "claude-binary",
+              "help": "Absolute path of the Claude Code executable; when omitted, `claude` is looked up on PATH",
+              "value_schema": {
+                "type": "string"
+              },
+              "presence": "optional"
+            },
+            {
+              "name": "claudewheel-binary",
+              "help": "Absolute path of the claudewheel executable; when omitted, `claudewheel` is looked up on PATH",
+              "value_schema": {
+                "type": "string"
+              },
+              "presence": "optional"
+            },
+            {
+              "name": "color",
+              "help": "--color colors the output and --no-color does not; when neither is passed, stdout and stderr are each colored only when they are a terminal and NO_COLOR is unset or empty",
+              "value_schema": {
+                "type": "boolean"
+              },
+              "presence": "optional",
+              "negatable": true
+            },
+            {
+              "name": "footer",
+              "help": "--footer writes a line with the turn's duration and cost to stderr after the reply and --no-footer does not; when neither is passed, the line is written (events with --json never writes it: its stderr carries the --json document)",
+              "value_schema": {
+                "type": "boolean"
+              },
+              "presence": "optional",
+              "negatable": true
+            }
+          ]
+        },
+        "list": {
+          "name": "list",
+          "help": "List the agents in .claudestream/agents/ as a table of name, version, and description; any file there that fails to load is an error",
+          "effect": "read_only",
+          "flags": [
+            {
+              "name": "cwd",
+              "help": "Directory whose .claudestream/agents/ is listed; when omitted, the current directory",
+              "value_schema": {
+                "type": "string"
+              },
+              "presence": "optional"
+            }
+          ]
+        },
+        "info": {
+          "name": "info",
+          "help": "Load an agent definition and print every field it declares: name, version, file, description, model, prompt placeholders, tools, sandbox, budget, MCP servers, and stream options. --agent-name searches the agents directory under the current directory",
+          "effect": "read_only",
+          "flags": [
+            {
+              "name": "agent-definition",
+              "help": "Which agent definition to load: pass --agent-name or --agent-file",
+              "presence": "required",
+              "choices": [
+                {
+                  "name": "agent-name",
+                  "help": "load the agent by name from the agents directory",
+                  "flags": [
+                    {
+                      "name": "value",
+                      "help": "Name of the agent defined in .claudestream/agents/<name>.agent.toml",
+                      "value_schema": {
+                        "type": "string"
+                      },
+                      "presence": "required"
+                    }
+                  ]
+                },
+                {
+                  "name": "agent-file",
+                  "help": "load the agent from this file",
+                  "flags": [
+                    {
+                      "name": "value",
+                      "help": "Path of an agent file named <name>.agent.toml",
+                      "value_schema": {
+                        "type": "string"
+                      },
+                      "presence": "required"
+                    }
+                  ]
+                }
+              ],
+              "elect_by": "member-flags"
+            }
+          ]
+        },
+        "validate": {
+          "name": "validate",
+          "help": "Load an agent definition, checking it as agent run would, and print its name and version; every problem the file has is reported and exits 1. --agent-name searches the agents directory under the current directory",
+          "effect": "read_only",
+          "flags": [
+            {
+              "name": "agent-definition",
+              "help": "Which agent definition to load: pass --agent-name or --agent-file",
+              "presence": "required",
+              "choices": [
+                {
+                  "name": "agent-name",
+                  "help": "load the agent by name from the agents directory",
+                  "flags": [
+                    {
+                      "name": "value",
+                      "help": "Name of the agent defined in .claudestream/agents/<name>.agent.toml",
+                      "value_schema": {
+                        "type": "string"
+                      },
+                      "presence": "required"
+                    }
+                  ]
+                },
+                {
+                  "name": "agent-file",
+                  "help": "load the agent from this file",
+                  "flags": [
+                    {
+                      "name": "value",
+                      "help": "Path of an agent file named <name>.agent.toml",
+                      "value_schema": {
+                        "type": "string"
+                      },
+                      "presence": "required"
+                    }
+                  ]
+                }
+              ],
+              "elect_by": "member-flags"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "infra": {
+    "handshakes": [
+      {
+        "env_var": "NO_COLOR",
+        "help": "When set to a non-empty value and neither --color nor --no-color is passed, output is not colored (https://no-color.org)"
+      }
+    ]
+  }
+}

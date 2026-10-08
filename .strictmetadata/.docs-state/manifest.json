@@ -3,10 +3,112 @@
   "name": "claudestream",
   "slug": "claudestream",
   "version": "0.15.3",
-  "description": "Drive Claude Code from Python: run it as a subprocess and read its output as typed events, with async and sync sessions, sandbox policies, and tools you define in Python",
-  "language": "python",
+  "description": "Drive Claude Code from Go: run it as a subprocess under a claudewheel profile and read its stream-json output as typed events, with sandboxed permissions, budget thresholds, tools served over MCP, agent definitions, and a command line",
+  "language": "go",
   "base_url": "https://smmh.dev/claudestream",
   "pages": [
+    {
+      "path": "agent.md",
+      "title": "agent",
+      "type": "doc",
+      "headings": [
+        {
+          "level": 1,
+          "text": "agent",
+          "anchor": "agent"
+        },
+        {
+          "level": 2,
+          "text": "`agent`",
+          "anchor": "agent"
+        },
+        {
+          "level": 3,
+          "text": "Migrating from .agent.json",
+          "anchor": "migrating-from-agentjson"
+        },
+        {
+          "level": 3,
+          "text": "`FormatVersion`",
+          "anchor": "formatversion"
+        },
+        {
+          "level": 3,
+          "text": "`FileSuffix`",
+          "anchor": "filesuffix"
+        },
+        {
+          "level": 3,
+          "text": "`ErrInvalidDefinition`",
+          "anchor": "errinvaliddefinition"
+        },
+        {
+          "level": 3,
+          "text": "`ErrNotFound`",
+          "anchor": "errnotfound"
+        },
+        {
+          "level": 3,
+          "text": "`ErrInvalidInvocation`",
+          "anchor": "errinvalidinvocation"
+        },
+        {
+          "level": 3,
+          "text": "`Definition`",
+          "anchor": "definition"
+        },
+        {
+          "level": 3,
+          "text": "`ToolSchema`",
+          "anchor": "toolschema"
+        },
+        {
+          "level": 3,
+          "text": "`Handler`",
+          "anchor": "handler"
+        },
+        {
+          "level": 3,
+          "text": "`Dir`",
+          "anchor": "dir"
+        },
+        {
+          "level": 3,
+          "text": "`Load`",
+          "anchor": "load"
+        },
+        {
+          "level": 3,
+          "text": "`LoadByName`",
+          "anchor": "loadbyname"
+        },
+        {
+          "level": 3,
+          "text": "`List`",
+          "anchor": "list"
+        },
+        {
+          "level": 3,
+          "text": "`BuildConfig`",
+          "anchor": "buildconfig"
+        },
+        {
+          "level": 3,
+          "text": "`Invoke`",
+          "anchor": "invoke"
+        },
+        {
+          "level": 3,
+          "text": "`Placeholders`",
+          "anchor": "placeholders"
+        },
+        {
+          "level": 3,
+          "text": "`ResolvePrompt`",
+          "anchor": "resolveprompt"
+        }
+      ]
+    },
     {
       "path": "agents-guide.md",
       "title": "Agent Definition Guide",
@@ -19,1557 +121,33 @@
         },
         {
           "level": 2,
-          "text": "File location and discovery",
-          "anchor": "file-location-and-discovery"
+          "text": "Where definitions live",
+          "anchor": "where-definitions-live"
         },
         {
           "level": 2,
-          "text": "The `.agent.json` format",
-          "anchor": "the-agentjson-format"
+          "text": "The format",
+          "anchor": "the-format"
         },
         {
           "level": 3,
-          "text": "Complete field reference",
-          "anchor": "complete-field-reference"
-        },
-        {
-          "level": 3,
-          "text": "Minimal example",
-          "anchor": "minimal-example"
-        },
-        {
-          "level": 3,
-          "text": "Full example",
-          "anchor": "full-example"
-        },
-        {
-          "level": 3,
-          "text": "The `format_version` gate",
-          "anchor": "the-format_version-gate"
+          "text": "Moving from `.agent.json`",
+          "anchor": "moving-from-agentjson"
         },
         {
           "level": 2,
-          "text": "Prompt templates and variable substitution",
-          "anchor": "prompt-templates-and-variable-substitution"
-        },
-        {
-          "level": 3,
-          "text": "How resolution works",
-          "anchor": "how-resolution-works"
-        },
-        {
-          "level": 3,
-          "text": "CLI usage",
-          "anchor": "cli-usage"
-        },
-        {
-          "level": 3,
-          "text": "Programmatic usage",
-          "anchor": "programmatic-usage"
+          "text": "Prompt templates",
+          "anchor": "prompt-templates"
         },
         {
           "level": 2,
-          "text": "Budget enforcement",
-          "anchor": "budget-enforcement"
-        },
-        {
-          "level": 3,
-          "text": "Example",
-          "anchor": "example"
-        },
-        {
-          "level": 3,
-          "text": "Handling threshold events",
-          "anchor": "handling-threshold-events"
+          "text": "How a definition becomes a session",
+          "anchor": "how-a-definition-becomes-a-session"
         },
         {
           "level": 2,
-          "text": "Sandbox configuration",
-          "anchor": "sandbox-configuration"
-        },
-        {
-          "level": 3,
-          "text": "Tool allow-list",
-          "anchor": "tool-allow-list"
-        },
-        {
-          "level": 3,
-          "text": "Write path scoping",
-          "anchor": "write-path-scoping"
-        },
-        {
-          "level": 3,
-          "text": "Example",
-          "anchor": "example-1"
-        },
-        {
-          "level": 2,
-          "text": "Tool and MCP configuration",
-          "anchor": "tool-and-mcp-configuration"
-        },
-        {
-          "level": 3,
-          "text": "Tool schemas",
-          "anchor": "tool-schemas"
-        },
-        {
-          "level": 3,
-          "text": "MCP server configuration",
-          "anchor": "mcp-server-configuration"
-        },
-        {
-          "level": 3,
-          "text": "Stream options",
-          "anchor": "stream-options"
-        },
-        {
-          "level": 2,
-          "text": "Configuration merging",
-          "anchor": "configuration-merging"
-        },
-        {
-          "level": 2,
-          "text": "Running agents via CLI",
-          "anchor": "running-agents-via-cli"
-        },
-        {
-          "level": 3,
-          "text": "`agent run`",
-          "anchor": "agent-run"
-        },
-        {
-          "level": 3,
-          "text": "`agent list`",
-          "anchor": "agent-list"
-        },
-        {
-          "level": 3,
-          "text": "`agent info`",
-          "anchor": "agent-info"
-        },
-        {
-          "level": 3,
-          "text": "`agent validate`",
-          "anchor": "agent-validate"
-        },
-        {
-          "level": 2,
-          "text": "Programmatic API",
-          "anchor": "programmatic-api"
-        },
-        {
-          "level": 3,
-          "text": "Loading agents",
-          "anchor": "loading-agents"
-        },
-        {
-          "level": 3,
-          "text": "Discovering agents",
-          "anchor": "discovering-agents"
-        },
-        {
-          "level": 3,
-          "text": "Sync invocation",
-          "anchor": "sync-invocation"
-        },
-        {
-          "level": 3,
-          "text": "Async invocation",
-          "anchor": "async-invocation"
-        },
-        {
-          "level": 2,
-          "text": "Deprecated fields",
-          "anchor": "deprecated-fields"
-        }
-      ]
-    },
-    {
-      "path": "claudestream-_agent.md",
-      "title": "claudestream._agent",
-      "type": "doc",
-      "headings": [
-        {
-          "level": 1,
-          "text": "claudestream._agent",
-          "anchor": "claudestream_agent"
-        },
-        {
-          "level": 2,
-          "text": "`claudestream._agent`",
-          "anchor": "claudestream_agent"
-        },
-        {
-          "level": 3,
-          "text": "`AgentValidationError`",
-          "anchor": "agentvalidationerror"
-        },
-        {
-          "level": 3,
-          "text": "`AgentDefinition`",
-          "anchor": "agentdefinition"
-        },
-        {
-          "level": 3,
-          "text": "`_check_deprecated_budget`",
-          "anchor": "_check_deprecated_budget"
-        },
-        {
-          "level": 3,
-          "text": "`_decode_agent_document`",
-          "anchor": "_decode_agent_document"
-        },
-        {
-          "level": 3,
-          "text": "`resolve_prompt`",
-          "anchor": "resolve_prompt"
-        },
-        {
-          "level": 3,
-          "text": "`load_agent`",
-          "anchor": "load_agent"
-        },
-        {
-          "level": 3,
-          "text": "`discover_agents`",
-          "anchor": "discover_agents"
-        },
-        {
-          "level": 3,
-          "text": "`_build_tools`",
-          "anchor": "_build_tools"
-        },
-        {
-          "level": 3,
-          "text": "`_resolve_model`",
-          "anchor": "_resolve_model"
-        },
-        {
-          "level": 3,
-          "text": "`_build_session_resolution`",
-          "anchor": "_build_session_resolution"
-        },
-        {
-          "level": 3,
-          "text": "`invoke_agent`",
-          "anchor": "invoke_agent"
-        },
-        {
-          "level": 3,
-          "text": "`invoke_agent_sync`",
-          "anchor": "invoke_agent_sync"
-        }
-      ]
-    },
-    {
-      "path": "claudestream-_async_session.md",
-      "title": "claudestream._async_session",
-      "type": "doc",
-      "headings": [
-        {
-          "level": 1,
-          "text": "claudestream._async_session",
-          "anchor": "claudestream_async_session"
-        },
-        {
-          "level": 2,
-          "text": "`claudestream._async_session`",
-          "anchor": "claudestream_async_session"
-        },
-        {
-          "level": 3,
-          "text": "`ClaudeStreamError`",
-          "anchor": "claudestreamerror"
-        },
-        {
-          "level": 3,
-          "text": "`AsyncSession`",
-          "anchor": "asyncsession"
-        },
-        {
-          "level": 4,
-          "text": "`_enrich_flattened`",
-          "anchor": "_enrich_flattened"
-        },
-        {
-          "level": 4,
-          "text": "`_build_process_config`",
-          "anchor": "_build_process_config"
-        },
-        {
-          "level": 4,
-          "text": "`session_id`",
-          "anchor": "session_id"
-        },
-        {
-          "level": 4,
-          "text": "`model_name`",
-          "anchor": "model_name"
-        },
-        {
-          "level": 4,
-          "text": "`tools`",
-          "anchor": "tools"
-        },
-        {
-          "level": 4,
-          "text": "`claude_version`",
-          "anchor": "claude_version"
-        },
-        {
-          "level": 4,
-          "text": "`last_result`",
-          "anchor": "last_result"
-        },
-        {
-          "level": 4,
-          "text": "`turn_count`",
-          "anchor": "turn_count"
-        },
-        {
-          "level": 4,
-          "text": "`total_tokens`",
-          "anchor": "total_tokens"
-        },
-        {
-          "level": 4,
-          "text": "`total_cost_usd`",
-          "anchor": "total_cost_usd"
-        },
-        {
-          "level": 4,
-          "text": "`stderr_lines`",
-          "anchor": "stderr_lines"
-        },
-        {
-          "level": 4,
-          "text": "`sandbox`",
-          "anchor": "sandbox"
-        },
-        {
-          "level": 4,
-          "text": "`user_tools`",
-          "anchor": "user_tools"
-        },
-        {
-          "level": 4,
-          "text": "`is_alive`",
-          "anchor": "is_alive"
-        },
-        {
-          "level": 4,
-          "text": "`active_turn`",
-          "anchor": "active_turn"
-        },
-        {
-          "level": 4,
-          "text": "`cancelled`",
-          "anchor": "cancelled"
-        },
-        {
-          "level": 4,
-          "text": "`files_modified`",
-          "anchor": "files_modified"
-        },
-        {
-          "level": 4,
-          "text": "`process_pid`",
-          "anchor": "process_pid"
-        },
-        {
-          "level": 4,
-          "text": "`cwd`",
-          "anchor": "cwd"
-        },
-        {
-          "level": 4,
-          "text": "`mcp_servers`",
-          "anchor": "mcp_servers"
-        },
-        {
-          "level": 4,
-          "text": "`permission_mode`",
-          "anchor": "permission_mode"
-        },
-        {
-          "level": 4,
-          "text": "`restart_count`",
-          "anchor": "restart_count"
-        },
-        {
-          "level": 4,
-          "text": "`config`",
-          "anchor": "config"
-        },
-        {
-          "level": 4,
-          "text": "`_start`",
-          "anchor": "_start"
-        },
-        {
-          "level": 4,
-          "text": "`_read_control_response`",
-          "anchor": "_read_control_response"
-        },
-        {
-          "level": 4,
-          "text": "`_run_mcp_handshake`",
-          "anchor": "_run_mcp_handshake"
-        },
-        {
-          "level": 4,
-          "text": "`close`",
-          "anchor": "close"
-        },
-        {
-          "level": 4,
-          "text": "`cancel`",
-          "anchor": "cancel"
-        },
-        {
-          "level": 4,
-          "text": "`send`",
-          "anchor": "send"
-        },
-        {
-          "level": 4,
-          "text": "`ask`",
-          "anchor": "ask"
-        },
-        {
-          "level": 4,
-          "text": "`_read_turn`",
-          "anchor": "_read_turn"
-        },
-        {
-          "level": 4,
-          "text": "`_liveness_probe`",
-          "anchor": "_liveness_probe"
-        },
-        {
-          "level": 4,
-          "text": "`_restart_subprocess`",
-          "anchor": "_restart_subprocess"
-        },
-        {
-          "level": 4,
-          "text": "`_handle_permission`",
-          "anchor": "_handle_permission"
-        },
-        {
-          "level": 4,
-          "text": "`_handle_mcp_request`",
-          "anchor": "_handle_mcp_request"
-        },
-        {
-          "level": 4,
-          "text": "`_resolve_control`",
-          "anchor": "_resolve_control"
-        },
-        {
-          "level": 4,
-          "text": "`_fail_pending_controls`",
-          "anchor": "_fail_pending_controls"
-        },
-        {
-          "level": 4,
-          "text": "`_control_request`",
-          "anchor": "_control_request"
-        },
-        {
-          "level": 4,
-          "text": "`_read_control_result`",
-          "anchor": "_read_control_result"
-        },
-        {
-          "level": 4,
-          "text": "`_check_thresholds`",
-          "anchor": "_check_thresholds"
-        },
-        {
-          "level": 4,
-          "text": "`_write_cost_log`",
-          "anchor": "_write_cost_log"
-        },
-        {
-          "level": 4,
-          "text": "`on`",
-          "anchor": "on"
-        },
-        {
-          "level": 4,
-          "text": "`on_turn_complete`",
-          "anchor": "on_turn_complete"
-        },
-        {
-          "level": 4,
-          "text": "`on_error`",
-          "anchor": "on_error"
-        },
-        {
-          "level": 4,
-          "text": "`on_close`",
-          "anchor": "on_close"
-        },
-        {
-          "level": 4,
-          "text": "`_fire_hooks`",
-          "anchor": "_fire_hooks"
-        },
-        {
-          "level": 4,
-          "text": "`respond_allow`",
-          "anchor": "respond_allow"
-        },
-        {
-          "level": 4,
-          "text": "`respond_deny`",
-          "anchor": "respond_deny"
-        },
-        {
-          "level": 4,
-          "text": "`respond_dialog`",
-          "anchor": "respond_dialog"
-        },
-        {
-          "level": 4,
-          "text": "`respond_dialog_cancelled`",
-          "anchor": "respond_dialog_cancelled"
-        },
-        {
-          "level": 4,
-          "text": "`interrupt`",
-          "anchor": "interrupt"
-        },
-        {
-          "level": 4,
-          "text": "`set_permission_mode`",
-          "anchor": "set_permission_mode"
-        },
-        {
-          "level": 4,
-          "text": "`set_model`",
-          "anchor": "set_model"
-        },
-        {
-          "level": 4,
-          "text": "`get_context_usage`",
-          "anchor": "get_context_usage"
-        }
-      ]
-    },
-    {
-      "path": "claudestream-_cli.md",
-      "title": "claudestream._cli",
-      "type": "doc",
-      "headings": [
-        {
-          "level": 1,
-          "text": "claudestream._cli",
-          "anchor": "claudestream_cli"
-        },
-        {
-          "level": 2,
-          "text": "`claudestream._cli`",
-          "anchor": "claudestream_cli"
-        },
-        {
-          "level": 3,
-          "text": "`_get_version`",
-          "anchor": "_get_version"
-        },
-        {
-          "level": 3,
-          "text": "`_opt`",
-          "anchor": "_opt"
-        },
-        {
-          "level": 3,
-          "text": "`_resolve_prompt`",
-          "anchor": "_resolve_prompt"
-        },
-        {
-          "level": 3,
-          "text": "`_build_config`",
-          "anchor": "_build_config"
-        },
-        {
-          "level": 3,
-          "text": "`_run_with_session`",
-          "anchor": "_run_with_session"
-        },
-        {
-          "level": 3,
-          "text": "`_stream_events`",
-          "anchor": "_stream_events"
-        },
-        {
-          "level": 3,
-          "text": "`cmd_send`",
-          "anchor": "cmd_send"
-        },
-        {
-          "level": 3,
-          "text": "`cmd_stream`",
-          "anchor": "cmd_stream"
-        },
-        {
-          "level": 3,
-          "text": "`cmd_events`",
-          "anchor": "cmd_events"
-        },
-        {
-          "level": 3,
-          "text": "`cmd_repl`",
-          "anchor": "cmd_repl"
-        },
-        {
-          "level": 3,
-          "text": "`cmd_agent_run`",
-          "anchor": "cmd_agent_run"
-        },
-        {
-          "level": 3,
-          "text": "`cmd_agent_list`",
-          "anchor": "cmd_agent_list"
-        },
-        {
-          "level": 3,
-          "text": "`cmd_agent_info`",
-          "anchor": "cmd_agent_info"
-        },
-        {
-          "level": 3,
-          "text": "`cmd_agent_validate`",
-          "anchor": "cmd_agent_validate"
-        },
-        {
-          "level": 3,
-          "text": "`cmd_ask`",
-          "anchor": "cmd_ask"
-        },
-        {
-          "level": 3,
-          "text": "`cmd_doctor`",
-          "anchor": "cmd_doctor"
-        },
-        {
-          "level": 3,
-          "text": "`cmd_config`",
-          "anchor": "cmd_config"
-        },
-        {
-          "level": 3,
-          "text": "`EventPrinter`",
-          "anchor": "eventprinter"
-        },
-        {
-          "level": 4,
-          "text": "`print_event`",
-          "anchor": "print_event"
-        },
-        {
-          "level": 3,
-          "text": "`_print_json`",
-          "anchor": "_print_json"
-        },
-        {
-          "level": 3,
-          "text": "`main`",
-          "anchor": "main"
-        }
-      ]
-    },
-    {
-      "path": "claudestream-_color.md",
-      "title": "claudestream._color",
-      "type": "doc",
-      "headings": [
-        {
-          "level": 1,
-          "text": "claudestream._color",
-          "anchor": "claudestream_color"
-        },
-        {
-          "level": 2,
-          "text": "`claudestream._color`",
-          "anchor": "claudestream_color"
-        },
-        {
-          "level": 3,
-          "text": "`should_color`",
-          "anchor": "should_color"
-        },
-        {
-          "level": 3,
-          "text": "`Colorizer`",
-          "anchor": "colorizer"
-        },
-        {
-          "level": 4,
-          "text": "`red`",
-          "anchor": "red"
-        },
-        {
-          "level": 4,
-          "text": "`yellow`",
-          "anchor": "yellow"
-        },
-        {
-          "level": 4,
-          "text": "`cyan`",
-          "anchor": "cyan"
-        },
-        {
-          "level": 4,
-          "text": "`dim`",
-          "anchor": "dim"
-        },
-        {
-          "level": 4,
-          "text": "`bold`",
-          "anchor": "bold"
-        }
-      ]
-    },
-    {
-      "path": "claudestream-_options.md",
-      "title": "claudestream._options",
-      "type": "doc",
-      "headings": [
-        {
-          "level": 1,
-          "text": "claudestream._options",
-          "anchor": "claudestream_options"
-        },
-        {
-          "level": 2,
-          "text": "`claudestream._options`",
-          "anchor": "claudestream_options"
-        },
-        {
-          "level": 3,
-          "text": "`SessionResolution`",
-          "anchor": "sessionresolution"
-        },
-        {
-          "level": 3,
-          "text": "`DebugOptions`",
-          "anchor": "debugoptions"
-        },
-        {
-          "level": 3,
-          "text": "`McpOptions`",
-          "anchor": "mcpoptions"
-        },
-        {
-          "level": 3,
-          "text": "`PluginOptions`",
-          "anchor": "pluginoptions"
-        },
-        {
-          "level": 3,
-          "text": "`StreamOptions`",
-          "anchor": "streamoptions"
-        },
-        {
-          "level": 3,
-          "text": "`ProcessLimits`",
-          "anchor": "processlimits"
-        },
-        {
-          "level": 3,
-          "text": "`Budget`",
-          "anchor": "budget"
-        },
-        {
-          "level": 3,
-          "text": "`validate_budget`",
-          "anchor": "validate_budget"
-        },
-        {
-          "level": 3,
-          "text": "`ToolSchema`",
-          "anchor": "toolschema"
-        },
-        {
-          "level": 3,
-          "text": "`SessionConfig`",
-          "anchor": "sessionconfig"
-        }
-      ]
-    },
-    {
-      "path": "claudestream-_process.md",
-      "title": "claudestream._process",
-      "type": "doc",
-      "headings": [
-        {
-          "level": 1,
-          "text": "claudestream._process",
-          "anchor": "claudestream_process"
-        },
-        {
-          "level": 2,
-          "text": "`claudestream._process`",
-          "anchor": "claudestream_process"
-        },
-        {
-          "level": 3,
-          "text": "`_kill_active_children`",
-          "anchor": "_kill_active_children"
-        },
-        {
-          "level": 3,
-          "text": "`find_binary`",
-          "anchor": "find_binary"
-        },
-        {
-          "level": 3,
-          "text": "`_version_lt`",
-          "anchor": "_version_lt"
-        },
-        {
-          "level": 3,
-          "text": "`check_version`",
-          "anchor": "check_version"
-        },
-        {
-          "level": 3,
-          "text": "`ProcessConfig`",
-          "anchor": "processconfig"
-        },
-        {
-          "level": 4,
-          "text": "`build_argv`",
-          "anchor": "build_argv"
-        },
-        {
-          "level": 3,
-          "text": "`ProcessManager`",
-          "anchor": "processmanager"
-        },
-        {
-          "level": 4,
-          "text": "`stdin`",
-          "anchor": "stdin"
-        },
-        {
-          "level": 4,
-          "text": "`stdout`",
-          "anchor": "stdout"
-        },
-        {
-          "level": 4,
-          "text": "`is_alive`",
-          "anchor": "is_alive"
-        },
-        {
-          "level": 4,
-          "text": "`stderr_lines`",
-          "anchor": "stderr_lines"
-        },
-        {
-          "level": 4,
-          "text": "`_drain_stderr`",
-          "anchor": "_drain_stderr"
-        },
-        {
-          "level": 4,
-          "text": "`start`",
-          "anchor": "start"
-        },
-        {
-          "level": 4,
-          "text": "`close`",
-          "anchor": "close"
-        },
-        {
-          "level": 4,
-          "text": "`kill`",
-          "anchor": "kill"
-        }
-      ]
-    },
-    {
-      "path": "claudestream-_protocol.md",
-      "title": "claudestream._protocol",
-      "type": "doc",
-      "headings": [
-        {
-          "level": 1,
-          "text": "claudestream._protocol",
-          "anchor": "claudestream_protocol"
-        },
-        {
-          "level": 2,
-          "text": "`claudestream._protocol`",
-          "anchor": "claudestream_protocol"
-        },
-        {
-          "level": 3,
-          "text": "`parse_content_block`",
-          "anchor": "parse_content_block"
-        },
-        {
-          "level": 3,
-          "text": "`parse_usage`",
-          "anchor": "parse_usage"
-        },
-        {
-          "level": 3,
-          "text": "`parse_event`",
-          "anchor": "parse_event"
-        },
-        {
-          "level": 3,
-          "text": "`_resolve_path`",
-          "anchor": "_resolve_path"
-        },
-        {
-          "level": 3,
-          "text": "`_derive_file_events`",
-          "anchor": "_derive_file_events"
-        },
-        {
-          "level": 3,
-          "text": "`flatten_event`",
-          "anchor": "flatten_event"
-        },
-        {
-          "level": 3,
-          "text": "`read_events`",
-          "anchor": "read_events"
-        },
-        {
-          "level": 3,
-          "text": "`write_message`",
-          "anchor": "write_message"
-        }
-      ]
-    },
-    {
-      "path": "claudestream-_sync_session.md",
-      "title": "claudestream._sync_session",
-      "type": "doc",
-      "headings": [
-        {
-          "level": 1,
-          "text": "claudestream._sync_session",
-          "anchor": "claudestream_sync_session"
-        },
-        {
-          "level": 2,
-          "text": "`claudestream._sync_session`",
-          "anchor": "claudestream_sync_session"
-        },
-        {
-          "level": 3,
-          "text": "`SyncSession`",
-          "anchor": "syncsession"
-        },
-        {
-          "level": 4,
-          "text": "`_run_loop`",
-          "anchor": "_run_loop"
-        },
-        {
-          "level": 4,
-          "text": "`_ensure_loop`",
-          "anchor": "_ensure_loop"
-        },
-        {
-          "level": 4,
-          "text": "`_run_coro`",
-          "anchor": "_run_coro"
-        },
-        {
-          "level": 4,
-          "text": "`close`",
-          "anchor": "close"
-        },
-        {
-          "level": 4,
-          "text": "`session_id`",
-          "anchor": "session_id"
-        },
-        {
-          "level": 4,
-          "text": "`model_name`",
-          "anchor": "model_name"
-        },
-        {
-          "level": 4,
-          "text": "`tools`",
-          "anchor": "tools"
-        },
-        {
-          "level": 4,
-          "text": "`claude_version`",
-          "anchor": "claude_version"
-        },
-        {
-          "level": 4,
-          "text": "`last_result`",
-          "anchor": "last_result"
-        },
-        {
-          "level": 4,
-          "text": "`files_modified`",
-          "anchor": "files_modified"
-        },
-        {
-          "level": 4,
-          "text": "`stderr_lines`",
-          "anchor": "stderr_lines"
-        },
-        {
-          "level": 4,
-          "text": "`turn_count`",
-          "anchor": "turn_count"
-        },
-        {
-          "level": 4,
-          "text": "`total_tokens`",
-          "anchor": "total_tokens"
-        },
-        {
-          "level": 4,
-          "text": "`total_cost_usd`",
-          "anchor": "total_cost_usd"
-        },
-        {
-          "level": 4,
-          "text": "`sandbox`",
-          "anchor": "sandbox"
-        },
-        {
-          "level": 4,
-          "text": "`user_tools`",
-          "anchor": "user_tools"
-        },
-        {
-          "level": 4,
-          "text": "`is_alive`",
-          "anchor": "is_alive"
-        },
-        {
-          "level": 4,
-          "text": "`active_turn`",
-          "anchor": "active_turn"
-        },
-        {
-          "level": 4,
-          "text": "`cancelled`",
-          "anchor": "cancelled"
-        },
-        {
-          "level": 4,
-          "text": "`process_pid`",
-          "anchor": "process_pid"
-        },
-        {
-          "level": 4,
-          "text": "`cwd`",
-          "anchor": "cwd"
-        },
-        {
-          "level": 4,
-          "text": "`mcp_servers`",
-          "anchor": "mcp_servers"
-        },
-        {
-          "level": 4,
-          "text": "`permission_mode`",
-          "anchor": "permission_mode"
-        },
-        {
-          "level": 4,
-          "text": "`config`",
-          "anchor": "config"
-        },
-        {
-          "level": 4,
-          "text": "`cancel`",
-          "anchor": "cancel"
-        },
-        {
-          "level": 4,
-          "text": "`ask`",
-          "anchor": "ask"
-        },
-        {
-          "level": 4,
-          "text": "`send`",
-          "anchor": "send"
-        },
-        {
-          "level": 4,
-          "text": "`on`",
-          "anchor": "on"
-        },
-        {
-          "level": 4,
-          "text": "`on_turn_complete`",
-          "anchor": "on_turn_complete"
-        },
-        {
-          "level": 4,
-          "text": "`on_error`",
-          "anchor": "on_error"
-        },
-        {
-          "level": 4,
-          "text": "`on_close`",
-          "anchor": "on_close"
-        },
-        {
-          "level": 4,
-          "text": "`respond_allow`",
-          "anchor": "respond_allow"
-        },
-        {
-          "level": 4,
-          "text": "`respond_deny`",
-          "anchor": "respond_deny"
-        },
-        {
-          "level": 4,
-          "text": "`respond_dialog`",
-          "anchor": "respond_dialog"
-        },
-        {
-          "level": 4,
-          "text": "`respond_dialog_cancelled`",
-          "anchor": "respond_dialog_cancelled"
-        },
-        {
-          "level": 4,
-          "text": "`interrupt`",
-          "anchor": "interrupt"
-        },
-        {
-          "level": 4,
-          "text": "`set_permission_mode`",
-          "anchor": "set_permission_mode"
-        },
-        {
-          "level": 4,
-          "text": "`set_model`",
-          "anchor": "set_model"
-        },
-        {
-          "level": 4,
-          "text": "`get_context_usage`",
-          "anchor": "get_context_usage"
-        }
-      ]
-    },
-    {
-      "path": "claudestream-_tools.md",
-      "title": "claudestream._tools",
-      "type": "doc",
-      "headings": [
-        {
-          "level": 1,
-          "text": "claudestream._tools",
-          "anchor": "claudestream_tools"
-        },
-        {
-          "level": 2,
-          "text": "`claudestream._tools`",
-          "anchor": "claudestream_tools"
-        },
-        {
-          "level": 3,
-          "text": "`Tool`",
-          "anchor": "tool"
-        },
-        {
-          "level": 3,
-          "text": "`_type_to_schema`",
-          "anchor": "_type_to_schema"
-        },
-        {
-          "level": 3,
-          "text": "`_parse_param_descriptions`",
-          "anchor": "_parse_param_descriptions"
-        },
-        {
-          "level": 3,
-          "text": "`_generate_schema`",
-          "anchor": "_generate_schema"
-        },
-        {
-          "level": 3,
-          "text": "`_get_type_hints_safe`",
-          "anchor": "_get_type_hints_safe"
-        },
-        {
-          "level": 3,
-          "text": "`tool`",
-          "anchor": "tool-1"
-        },
-        {
-          "level": 3,
-          "text": "`collect_tools`",
-          "anchor": "collect_tools"
-        }
-      ]
-    },
-    {
-      "path": "claudestream-events.md",
-      "title": "claudestream.events",
-      "type": "doc",
-      "headings": [
-        {
-          "level": 1,
-          "text": "claudestream.events",
-          "anchor": "claudestreamevents"
-        },
-        {
-          "level": 2,
-          "text": "`claudestream.events`",
-          "anchor": "claudestreamevents"
-        },
-        {
-          "level": 3,
-          "text": "`Event`",
-          "anchor": "event"
-        },
-        {
-          "level": 3,
-          "text": "`SystemInit`",
-          "anchor": "systeminit"
-        },
-        {
-          "level": 3,
-          "text": "`ApiRetry`",
-          "anchor": "apiretry"
-        },
-        {
-          "level": 3,
-          "text": "`CompactBoundary`",
-          "anchor": "compactboundary"
-        },
-        {
-          "level": 3,
-          "text": "`TextBlock`",
-          "anchor": "textblock"
-        },
-        {
-          "level": 3,
-          "text": "`ToolUseBlock`",
-          "anchor": "tooluseblock"
-        },
-        {
-          "level": 3,
-          "text": "`ThinkingBlock`",
-          "anchor": "thinkingblock"
-        },
-        {
-          "level": 3,
-          "text": "`ToolResultBlock`",
-          "anchor": "toolresultblock"
-        },
-        {
-          "level": 3,
-          "text": "`Usage`",
-          "anchor": "usage"
-        },
-        {
-          "level": 3,
-          "text": "`ContextCategory`",
-          "anchor": "contextcategory"
-        },
-        {
-          "level": 3,
-          "text": "`ContextUsage`",
-          "anchor": "contextusage"
-        },
-        {
-          "level": 3,
-          "text": "`AssistantMessage`",
-          "anchor": "assistantmessage"
-        },
-        {
-          "level": 3,
-          "text": "`ToolResultMessage`",
-          "anchor": "toolresultmessage"
-        },
-        {
-          "level": 3,
-          "text": "`AssistantText`",
-          "anchor": "assistanttext"
-        },
-        {
-          "level": 3,
-          "text": "`ToolUse`",
-          "anchor": "tooluse"
-        },
-        {
-          "level": 3,
-          "text": "`Thinking`",
-          "anchor": "thinking"
-        },
-        {
-          "level": 3,
-          "text": "`ToolResult`",
-          "anchor": "toolresult"
-        },
-        {
-          "level": 3,
-          "text": "`FileWrite`",
-          "anchor": "filewrite"
-        },
-        {
-          "level": 3,
-          "text": "`FileEdit`",
-          "anchor": "fileedit"
-        },
-        {
-          "level": 3,
-          "text": "`StreamDelta`",
-          "anchor": "streamdelta"
-        },
-        {
-          "level": 4,
-          "text": "`delta_type`",
-          "anchor": "delta_type"
-        },
-        {
-          "level": 4,
-          "text": "`text`",
-          "anchor": "text"
-        },
-        {
-          "level": 4,
-          "text": "`partial_json`",
-          "anchor": "partial_json"
-        },
-        {
-          "level": 4,
-          "text": "`event_type`",
-          "anchor": "event_type"
-        },
-        {
-          "level": 3,
-          "text": "`Result`",
-          "anchor": "result"
-        },
-        {
-          "level": 3,
-          "text": "`BudgetThreshold`",
-          "anchor": "budgetthreshold"
-        },
-        {
-          "level": 3,
-          "text": "`RateLimit`",
-          "anchor": "ratelimit"
-        },
-        {
-          "level": 3,
-          "text": "`PermissionRequest`",
-          "anchor": "permissionrequest"
-        },
-        {
-          "level": 3,
-          "text": "`UserDialogRequest`",
-          "anchor": "userdialogrequest"
-        },
-        {
-          "level": 3,
-          "text": "`McpRequest`",
-          "anchor": "mcprequest"
-        },
-        {
-          "level": 3,
-          "text": "`HookEvent`",
-          "anchor": "hookevent"
-        },
-        {
-          "level": 3,
-          "text": "`UnknownEvent`",
-          "anchor": "unknownevent"
-        },
-        {
-          "level": 3,
-          "text": "`ControlResponse`",
-          "anchor": "controlresponse"
-        },
-        {
-          "level": 3,
-          "text": "`AskResult`",
-          "anchor": "askresult"
-        },
-        {
-          "level": 2,
-          "text": "Type Aliases",
-          "anchor": "type-aliases"
-        }
-      ]
-    },
-    {
-      "path": "claudestream-messages.md",
-      "title": "claudestream.messages",
-      "type": "doc",
-      "headings": [
-        {
-          "level": 1,
-          "text": "claudestream.messages",
-          "anchor": "claudestreammessages"
-        },
-        {
-          "level": 2,
-          "text": "`claudestream.messages`",
-          "anchor": "claudestreammessages"
-        },
-        {
-          "level": 3,
-          "text": "`UserMessage`",
-          "anchor": "usermessage"
-        },
-        {
-          "level": 4,
-          "text": "`to_dict`",
-          "anchor": "to_dict"
-        },
-        {
-          "level": 3,
-          "text": "`AllowPermission`",
-          "anchor": "allowpermission"
-        },
-        {
-          "level": 4,
-          "text": "`to_dict`",
-          "anchor": "to_dict-1"
-        },
-        {
-          "level": 3,
-          "text": "`DialogCompleted`",
-          "anchor": "dialogcompleted"
-        },
-        {
-          "level": 4,
-          "text": "`to_dict`",
-          "anchor": "to_dict-2"
-        },
-        {
-          "level": 3,
-          "text": "`DialogCancelled`",
-          "anchor": "dialogcancelled"
-        },
-        {
-          "level": 4,
-          "text": "`to_dict`",
-          "anchor": "to_dict-3"
-        },
-        {
-          "level": 3,
-          "text": "`DenyPermission`",
-          "anchor": "denypermission"
-        },
-        {
-          "level": 4,
-          "text": "`to_dict`",
-          "anchor": "to_dict-4"
-        },
-        {
-          "level": 3,
-          "text": "`McpResponse`",
-          "anchor": "mcpresponse"
-        },
-        {
-          "level": 4,
-          "text": "`to_dict`",
-          "anchor": "to_dict-5"
-        },
-        {
-          "level": 3,
-          "text": "`McpSetServers`",
-          "anchor": "mcpsetservers"
-        },
-        {
-          "level": 4,
-          "text": "`to_dict`",
-          "anchor": "to_dict-6"
-        },
-        {
-          "level": 3,
-          "text": "`InitializeRequest`",
-          "anchor": "initializerequest"
-        },
-        {
-          "level": 4,
-          "text": "`to_dict`",
-          "anchor": "to_dict-7"
-        },
-        {
-          "level": 3,
-          "text": "`ControlRequest`",
-          "anchor": "controlrequest"
-        },
-        {
-          "level": 4,
-          "text": "`to_dict`",
-          "anchor": "to_dict-8"
-        }
-      ]
-    },
-    {
-      "path": "claudestream-policy.md",
-      "title": "claudestream.policy",
-      "type": "doc",
-      "headings": [
-        {
-          "level": 1,
-          "text": "claudestream.policy",
-          "anchor": "claudestreampolicy"
-        },
-        {
-          "level": 2,
-          "text": "`claudestream.policy`",
-          "anchor": "claudestreampolicy"
-        },
-        {
-          "level": 3,
-          "text": "`Allow`",
-          "anchor": "allow"
-        },
-        {
-          "level": 3,
-          "text": "`Deny`",
-          "anchor": "deny"
-        },
-        {
-          "level": 3,
-          "text": "`Sandbox`",
-          "anchor": "sandbox"
-        },
-        {
-          "level": 3,
-          "text": "`create_sandbox`",
-          "anchor": "create_sandbox"
-        },
-        {
-          "level": 3,
-          "text": "`sandbox_to_flags`",
-          "anchor": "sandbox_to_flags"
-        },
-        {
-          "level": 3,
-          "text": "`_resolve_path`",
-          "anchor": "_resolve_path"
-        },
-        {
-          "level": 3,
-          "text": "`_is_within`",
-          "anchor": "_is_within"
-        },
-        {
-          "level": 3,
-          "text": "`sandbox_decide`",
-          "anchor": "sandbox_decide"
+          "text": "The command line",
+          "anchor": "the-command-line"
         }
       ]
     },
@@ -1585,63 +163,158 @@
         },
         {
           "level": 2,
-          "text": "`claudestream`",
-          "anchor": "claudestream"
+          "text": "`.`",
+          "anchor": ""
         },
         {
           "level": 3,
-          "text": "`print_prompt`",
-          "anchor": "print_prompt"
+          "text": "`DefaultLineLimit`",
+          "anchor": "defaultlinelimit"
         },
         {
           "level": 3,
-          "text": "`AsyncSession`",
-          "anchor": "asyncsession"
+          "text": "`DefaultShutdownTimeout`",
+          "anchor": "defaultshutdowntimeout"
         },
         {
           "level": 3,
-          "text": "`ClaudeStreamError`",
-          "anchor": "claudestreamerror"
+          "text": "`DefaultVersionCheckTimeout`",
+          "anchor": "defaultversionchecktimeout"
         },
         {
           "level": 3,
-          "text": "`SyncSession`",
-          "anchor": "syncsession"
+          "text": "`BudgetMetricCost`",
+          "anchor": "budgetmetriccost"
         },
         {
           "level": 3,
-          "text": "`AskResult`",
-          "anchor": "askresult"
+          "text": "`BudgetMetricTurns`",
+          "anchor": "budgetmetricturns"
         },
         {
           "level": 3,
-          "text": "`AssistantMessage`",
-          "anchor": "assistantmessage"
+          "text": "`BudgetMetricTokens`",
+          "anchor": "budgetmetrictokens"
         },
         {
           "level": 3,
-          "text": "`AssistantText`",
-          "anchor": "assistanttext"
+          "text": "`ClaudeProgram`",
+          "anchor": "claudeprogram"
         },
         {
           "level": 3,
-          "text": "`ApiRetry`",
-          "anchor": "apiretry"
+          "text": "`ClaudewheelProgram`",
+          "anchor": "claudewheelprogram"
         },
         {
           "level": 3,
-          "text": "`BudgetThreshold`",
-          "anchor": "budgetthreshold"
+          "text": "`MinimumClaudeVersion`",
+          "anchor": "minimumclaudeversion"
         },
         {
           "level": 3,
-          "text": "`CompactBoundary`",
-          "anchor": "compactboundary"
+          "text": "`ErrInvalidConfig`",
+          "anchor": "errinvalidconfig"
         },
         {
           "level": 3,
-          "text": "`ContentBlock`",
-          "anchor": "contentblock"
+          "text": "`ErrTurnActive`",
+          "anchor": "errturnactive"
+        },
+        {
+          "level": 3,
+          "text": "`ErrSessionUnusable`",
+          "anchor": "errsessionunusable"
+        },
+        {
+          "level": 3,
+          "text": "`ErrAuthentication`",
+          "anchor": "errauthentication"
+        },
+        {
+          "level": 3,
+          "text": "`ErrSessionClosed`",
+          "anchor": "errsessionclosed"
+        },
+        {
+          "level": 3,
+          "text": "`ErrUnknownRequest`",
+          "anchor": "errunknownrequest"
+        },
+        {
+          "level": 3,
+          "text": "`ErrLineTooLong`",
+          "anchor": "errlinetoolong"
+        },
+        {
+          "level": 3,
+          "text": "`ErrVersionCheck`",
+          "anchor": "errversioncheck"
+        },
+        {
+          "level": 3,
+          "text": "`ErrNotOnPath`",
+          "anchor": "errnotonpath"
+        },
+        {
+          "level": 3,
+          "text": "`Budget`",
+          "anchor": "budget"
+        },
+        {
+          "level": 3,
+          "text": "`Config`",
+          "anchor": "config"
+        },
+        {
+          "level": 3,
+          "text": "`SessionResolution`",
+          "anchor": "sessionresolution"
+        },
+        {
+          "level": 3,
+          "text": "`NewSession`",
+          "anchor": "newsession"
+        },
+        {
+          "level": 3,
+          "text": "`ResumeSession`",
+          "anchor": "resumesession"
+        },
+        {
+          "level": 3,
+          "text": "`ContinueLastSession`",
+          "anchor": "continuelastsession"
+        },
+        {
+          "level": 3,
+          "text": "`DebugOptions`",
+          "anchor": "debugoptions"
+        },
+        {
+          "level": 3,
+          "text": "`MCPOptions`",
+          "anchor": "mcpoptions"
+        },
+        {
+          "level": 3,
+          "text": "`PluginOptions`",
+          "anchor": "pluginoptions"
+        },
+        {
+          "level": 3,
+          "text": "`StreamOptions`",
+          "anchor": "streamoptions"
+        },
+        {
+          "level": 3,
+          "text": "`ProcessLimits`",
+          "anchor": "processlimits"
+        },
+        {
+          "level": 3,
+          "text": "`Tool`",
+          "anchor": "tool"
         },
         {
           "level": 3,
@@ -1655,8 +328,13 @@
         },
         {
           "level": 3,
-          "text": "`ControlResponse`",
-          "anchor": "controlresponse"
+          "text": "`ErrProcessExited`",
+          "anchor": "errprocessexited"
+        },
+        {
+          "level": 3,
+          "text": "`ControlError`",
+          "anchor": "controlerror"
         },
         {
           "level": 3,
@@ -1665,43 +343,13 @@
         },
         {
           "level": 3,
-          "text": "`FileEdit`",
-          "anchor": "fileedit"
+          "text": "`EventHeader`",
+          "anchor": "eventheader"
         },
         {
           "level": 3,
-          "text": "`FileWrite`",
-          "anchor": "filewrite"
-        },
-        {
-          "level": 3,
-          "text": "`HookEvent`",
-          "anchor": "hookevent"
-        },
-        {
-          "level": 3,
-          "text": "`McpRequest`",
-          "anchor": "mcprequest"
-        },
-        {
-          "level": 3,
-          "text": "`PermissionRequest`",
-          "anchor": "permissionrequest"
-        },
-        {
-          "level": 3,
-          "text": "`RateLimit`",
-          "anchor": "ratelimit"
-        },
-        {
-          "level": 3,
-          "text": "`Result`",
-          "anchor": "result"
-        },
-        {
-          "level": 3,
-          "text": "`StreamDelta`",
-          "anchor": "streamdelta"
+          "text": "`MCPServerStatus`",
+          "anchor": "mcpserverstatus"
         },
         {
           "level": 3,
@@ -1710,8 +358,18 @@
         },
         {
           "level": 3,
-          "text": "`TextBlock`",
-          "anchor": "textblock"
+          "text": "`APIRetry`",
+          "anchor": "apiretry"
+        },
+        {
+          "level": 3,
+          "text": "`CompactBoundary`",
+          "anchor": "compactboundary"
+        },
+        {
+          "level": 3,
+          "text": "`AssistantText`",
+          "anchor": "assistanttext"
         },
         {
           "level": 3,
@@ -1720,8 +378,8 @@
         },
         {
           "level": 3,
-          "text": "`ThinkingBlock`",
-          "anchor": "thinkingblock"
+          "text": "`ToolUse`",
+          "anchor": "tooluse"
         },
         {
           "level": 3,
@@ -1730,28 +388,18 @@
         },
         {
           "level": 3,
-          "text": "`ToolResultBlock`",
-          "anchor": "toolresultblock"
+          "text": "`FileWrite`",
+          "anchor": "filewrite"
         },
         {
           "level": 3,
-          "text": "`ToolResultMessage`",
-          "anchor": "toolresultmessage"
+          "text": "`FileEdit`",
+          "anchor": "fileedit"
         },
         {
           "level": 3,
-          "text": "`ToolUse`",
-          "anchor": "tooluse"
-        },
-        {
-          "level": 3,
-          "text": "`ToolUseBlock`",
-          "anchor": "tooluseblock"
-        },
-        {
-          "level": 3,
-          "text": "`UnknownEvent`",
-          "anchor": "unknownevent"
+          "text": "`StreamDelta`",
+          "anchor": "streamdelta"
         },
         {
           "level": 3,
@@ -1760,88 +408,73 @@
         },
         {
           "level": 3,
+          "text": "`ModelUsage`",
+          "anchor": "modelusage"
+        },
+        {
+          "level": 3,
+          "text": "`Result`",
+          "anchor": "result"
+        },
+        {
+          "level": 3,
+          "text": "`RateLimit`",
+          "anchor": "ratelimit"
+        },
+        {
+          "level": 3,
+          "text": "`PermissionRequest`",
+          "anchor": "permissionrequest"
+        },
+        {
+          "level": 3,
+          "text": "`PermissionDecided`",
+          "anchor": "permissiondecided"
+        },
+        {
+          "level": 3,
           "text": "`UserDialogRequest`",
           "anchor": "userdialogrequest"
         },
         {
           "level": 3,
-          "text": "`AllowPermission`",
-          "anchor": "allowpermission"
+          "text": "`SDKToolCall`",
+          "anchor": "sdktoolcall"
         },
         {
           "level": 3,
-          "text": "`DenyPermission`",
-          "anchor": "denypermission"
+          "text": "`UnknownControlRequest`",
+          "anchor": "unknowncontrolrequest"
         },
         {
           "level": 3,
-          "text": "`DialogCancelled`",
-          "anchor": "dialogcancelled"
+          "text": "`BudgetMetric`",
+          "anchor": "budgetmetric"
         },
         {
           "level": 3,
-          "text": "`DialogCompleted`",
-          "anchor": "dialogcompleted"
+          "text": "`BudgetThreshold`",
+          "anchor": "budgetthreshold"
         },
         {
           "level": 3,
-          "text": "`InitializeRequest`",
-          "anchor": "initializerequest"
+          "text": "`UnknownEvent`",
+          "anchor": "unknownevent"
         },
         {
           "level": 3,
-          "text": "`McpResponse`",
-          "anchor": "mcpresponse"
+          "text": "`UnknownContentBlock`",
+          "anchor": "unknowncontentblock"
         },
         {
           "level": 3,
-          "text": "`McpSetServers`",
-          "anchor": "mcpsetservers"
+          "text": "`NonJSONLine`",
+          "anchor": "nonjsonline"
         },
         {
           "level": 3,
-          "text": "`UserMessage`",
-          "anchor": "usermessage"
-        },
-        {
-          "level": 3,
-          "text": "`Writable`",
-          "anchor": "writable"
-        },
-        {
-          "level": 3,
-          "text": "`flatten_event`",
-          "anchor": "flatten_event"
-        },
-        {
-          "level": 3,
-          "text": "`parse_event`",
-          "anchor": "parse_event"
-        },
-        {
-          "level": 3,
-          "text": "`read_events`",
-          "anchor": "read_events"
-        },
-        {
-          "level": 3,
-          "text": "`write_message`",
-          "anchor": "write_message"
-        },
-        {
-          "level": 3,
-          "text": "`Allow`",
-          "anchor": "allow"
-        },
-        {
-          "level": 3,
-          "text": "`BUILTIN_TOOLS`",
-          "anchor": "builtin_tools"
-        },
-        {
-          "level": 3,
-          "text": "`Deny`",
-          "anchor": "deny"
+          "text": "`UndecodableEvent`",
+          "anchor": "undecodableevent"
         },
         {
           "level": 3,
@@ -1850,168 +483,238 @@
         },
         {
           "level": 3,
-          "text": "`create_sandbox`",
-          "anchor": "create_sandbox"
+          "text": "`SandboxDecision`",
+          "anchor": "sandboxdecision"
         },
         {
           "level": 3,
-          "text": "`Tool`",
-          "anchor": "tool"
+          "text": "`Session`",
+          "anchor": "session"
         },
         {
           "level": 3,
-          "text": "`collect_tools`",
-          "anchor": "collect_tools"
+          "text": "`Turn`",
+          "anchor": "turn"
         },
         {
           "level": 3,
-          "text": "`tool`",
-          "anchor": "tool-1"
+          "text": "`ResolveOnPath`",
+          "anchor": "resolveonpath"
         },
         {
           "level": 3,
-          "text": "`Budget`",
-          "anchor": "budget"
+          "text": "`ProfileExecArgv`",
+          "anchor": "profileexecargv"
         },
         {
           "level": 3,
-          "text": "`DebugOptions`",
-          "anchor": "debugoptions"
+          "text": "`CheckClaudeVersion`",
+          "anchor": "checkclaudeversion"
         },
         {
           "level": 3,
-          "text": "`McpOptions`",
-          "anchor": "mcpoptions"
+          "text": "`CheckProfileVersion`",
+          "anchor": "checkprofileversion"
         },
         {
           "level": 3,
-          "text": "`PluginOptions`",
-          "anchor": "pluginoptions"
+          "text": "`Start`",
+          "anchor": "start"
         },
         {
           "level": 3,
-          "text": "`ProcessLimits`",
-          "anchor": "processlimits"
+          "text": "`Budget.Validate`",
+          "anchor": "budgetvalidate"
         },
         {
           "level": 3,
-          "text": "`SessionConfig`",
-          "anchor": "sessionconfig"
+          "text": "`Config.Validate`",
+          "anchor": "configvalidate"
         },
         {
           "level": 3,
-          "text": "`SessionResolution`",
-          "anchor": "sessionresolution"
+          "text": "`Session.Interrupt`",
+          "anchor": "sessioninterrupt"
         },
         {
           "level": 3,
-          "text": "`StreamOptions`",
-          "anchor": "streamoptions"
+          "text": "`Session.SetPermissionMode`",
+          "anchor": "sessionsetpermissionmode"
         },
         {
           "level": 3,
-          "text": "`ToolSchema`",
-          "anchor": "toolschema"
+          "text": "`Session.SetModel`",
+          "anchor": "sessionsetmodel"
         },
         {
           "level": 3,
-          "text": "`ProcessConfig`",
-          "anchor": "processconfig"
+          "text": "`Session.GetContextUsage`",
+          "anchor": "sessiongetcontextusage"
         },
         {
           "level": 3,
-          "text": "`ProcessManager`",
-          "anchor": "processmanager"
+          "text": "`Session.RespondAllow`",
+          "anchor": "sessionrespondallow"
         },
         {
           "level": 3,
-          "text": "`AgentDefinition`",
-          "anchor": "agentdefinition"
+          "text": "`Session.RespondDeny`",
+          "anchor": "sessionresponddeny"
         },
         {
           "level": 3,
-          "text": "`AgentValidationError`",
-          "anchor": "agentvalidationerror"
+          "text": "`Session.RespondDialog`",
+          "anchor": "sessionresponddialog"
         },
         {
           "level": 3,
-          "text": "`discover_agents`",
-          "anchor": "discover_agents"
+          "text": "`Session.RespondDialogCancelled`",
+          "anchor": "sessionresponddialogcancelled"
         },
         {
           "level": 3,
-          "text": "`invoke_agent`",
-          "anchor": "invoke_agent"
+          "text": "`ErrProcessExited.Error`",
+          "anchor": "errprocessexitederror"
         },
         {
           "level": 3,
-          "text": "`invoke_agent_sync`",
-          "anchor": "invoke_agent_sync"
+          "text": "`ControlError.Error`",
+          "anchor": "controlerrorerror"
         },
         {
           "level": 3,
-          "text": "`load_agent`",
-          "anchor": "load_agent"
+          "text": "`EventHeader.Header`",
+          "anchor": "eventheaderheader"
         },
         {
           "level": 3,
-          "text": "`resolve_prompt`",
-          "anchor": "resolve_prompt"
-        },
-        {
-          "level": 2,
-          "text": "Public API",
-          "anchor": "public-api"
+          "text": "`ToolResult.ContentText`",
+          "anchor": "toolresultcontenttext"
         },
         {
           "level": 3,
-          "text": "Sessions",
-          "anchor": "sessions"
+          "text": "`StreamDelta.StreamEventType`",
+          "anchor": "streamdeltastreameventtype"
         },
         {
           "level": 3,
-          "text": "Events",
-          "anchor": "events"
+          "text": "`StreamDelta.DeltaType`",
+          "anchor": "streamdeltadeltatype"
         },
         {
           "level": 3,
-          "text": "Content Blocks",
-          "anchor": "content-blocks"
+          "text": "`StreamDelta.Text`",
+          "anchor": "streamdeltatext"
         },
         {
           "level": 3,
-          "text": "Messages",
-          "anchor": "messages"
+          "text": "`StreamDelta.ThinkingText`",
+          "anchor": "streamdeltathinkingtext"
         },
         {
           "level": 3,
-          "text": "Protocol",
-          "anchor": "protocol"
+          "text": "`StreamDelta.PartialJSON`",
+          "anchor": "streamdeltapartialjson"
         },
         {
           "level": 3,
-          "text": "Policy",
-          "anchor": "policy"
+          "text": "`Sandbox.Validate`",
+          "anchor": "sandboxvalidate"
         },
         {
           "level": 3,
-          "text": "Tools",
-          "anchor": "tools"
+          "text": "`Sandbox.Decide`",
+          "anchor": "sandboxdecide"
         },
         {
           "level": 3,
-          "text": "Options",
-          "anchor": "options"
+          "text": "`Session.Send`",
+          "anchor": "sessionsend"
         },
         {
           "level": 3,
-          "text": "Process",
-          "anchor": "process"
+          "text": "`Session.SendBlocks`",
+          "anchor": "sessionsendblocks"
         },
         {
           "level": 3,
-          "text": "Agents",
-          "anchor": "agents"
+          "text": "`Turn.Next`",
+          "anchor": "turnnext"
+        },
+        {
+          "level": 3,
+          "text": "`Session.Close`",
+          "anchor": "sessionclose"
+        },
+        {
+          "level": 3,
+          "text": "`Session.SessionID`",
+          "anchor": "sessionsessionid"
+        },
+        {
+          "level": 3,
+          "text": "`Session.Model`",
+          "anchor": "sessionmodel"
+        },
+        {
+          "level": 3,
+          "text": "`Session.Tools`",
+          "anchor": "sessiontools"
+        },
+        {
+          "level": 3,
+          "text": "`Session.ClaudeVersion`",
+          "anchor": "sessionclaudeversion"
+        },
+        {
+          "level": 3,
+          "text": "`Session.Cwd`",
+          "anchor": "sessioncwd"
+        },
+        {
+          "level": 3,
+          "text": "`Session.MCPServers`",
+          "anchor": "sessionmcpservers"
+        },
+        {
+          "level": 3,
+          "text": "`Session.PermissionMode`",
+          "anchor": "sessionpermissionmode"
+        },
+        {
+          "level": 3,
+          "text": "`Session.TurnCount`",
+          "anchor": "sessionturncount"
+        },
+        {
+          "level": 3,
+          "text": "`Session.TotalTokens`",
+          "anchor": "sessiontotaltokens"
+        },
+        {
+          "level": 3,
+          "text": "`Session.TotalCostUSD`",
+          "anchor": "sessiontotalcostusd"
+        },
+        {
+          "level": 3,
+          "text": "`Session.FilesModified`",
+          "anchor": "sessionfilesmodified"
+        },
+        {
+          "level": 3,
+          "text": "`Session.LastResult`",
+          "anchor": "sessionlastresult"
+        },
+        {
+          "level": 3,
+          "text": "`Session.PID`",
+          "anchor": "sessionpid"
+        },
+        {
+          "level": 3,
+          "text": "`Session.Stderr`",
+          "anchor": "sessionstderr"
         }
       ]
     },
@@ -2036,11 +739,6 @@
           "anchor": "flags"
         },
         {
-          "level": 3,
-          "text": "Arguments",
-          "anchor": "arguments"
-        },
-        {
           "level": 2,
           "text": "agent list",
           "anchor": "agent-list"
@@ -2057,8 +755,8 @@
         },
         {
           "level": 3,
-          "text": "Arguments",
-          "anchor": "arguments-1"
+          "text": "Flags",
+          "anchor": "flags-2"
         },
         {
           "level": 2,
@@ -2067,8 +765,8 @@
         },
         {
           "level": 3,
-          "text": "Arguments",
-          "anchor": "arguments-2"
+          "text": "Flags",
+          "anchor": "flags-3"
         }
       ]
     },
@@ -2081,28 +779,6 @@
           "level": 1,
           "text": "claudestream ask",
           "anchor": "claudestream-ask"
-        },
-        {
-          "level": 2,
-          "text": "Flags",
-          "anchor": "flags"
-        },
-        {
-          "level": 2,
-          "text": "Arguments",
-          "anchor": "arguments"
-        }
-      ]
-    },
-    {
-      "path": "cli-config.md",
-      "title": "claudestream config",
-      "type": "doc",
-      "headings": [
-        {
-          "level": 1,
-          "text": "claudestream config",
-          "anchor": "claudestream-config"
         },
         {
           "level": 2,
@@ -2142,11 +818,6 @@
           "level": 2,
           "text": "Flags",
           "anchor": "flags"
-        },
-        {
-          "level": 2,
-          "text": "Arguments",
-          "anchor": "arguments"
         }
       ]
     },
@@ -2174,23 +845,16 @@
           "level": 2,
           "text": "Framework flags",
           "anchor": "framework-flags"
-        }
-      ]
-    },
-    {
-      "path": "cli-repl.md",
-      "title": "claudestream repl",
-      "type": "doc",
-      "headings": [
-        {
-          "level": 1,
-          "text": "claudestream repl",
-          "anchor": "claudestream-repl"
         },
         {
           "level": 2,
-          "text": "Flags",
-          "anchor": "flags"
+          "text": "Infrastructure",
+          "anchor": "infrastructure"
+        },
+        {
+          "level": 3,
+          "text": "Handshake variables",
+          "anchor": "handshake-variables"
         }
       ]
     },
@@ -2208,11 +872,6 @@
           "level": 2,
           "text": "Flags",
           "anchor": "flags"
-        },
-        {
-          "level": 2,
-          "text": "Arguments",
-          "anchor": "arguments"
         }
       ]
     },
@@ -2230,11 +889,6 @@
           "level": 2,
           "text": "Flags",
           "anchor": "flags"
-        },
-        {
-          "level": 2,
-          "text": "Arguments",
-          "anchor": "arguments"
         }
       ]
     },
@@ -2252,908 +906,58 @@
     },
     {
       "path": "guide.md",
-      "title": "Architecture Guide",
+      "title": "Guide",
       "type": "doc",
       "headings": [
         {
           "level": 1,
-          "text": "Architecture Guide",
-          "anchor": "architecture-guide"
+          "text": "Guide",
+          "anchor": "guide"
         },
         {
           "level": 2,
-          "text": "The four layers",
-          "anchor": "the-four-layers"
-        },
-        {
-          "level": 3,
-          "text": "Process (bottom)",
-          "anchor": "process-bottom"
+          "text": "Configuration",
+          "anchor": "configuration"
         },
         {
           "level": 2,
-          "text": "`claudestream._process`",
-          "anchor": "claudestream_process"
-        },
-        {
-          "level": 3,
-          "text": "`_kill_active_children`",
-          "anchor": "_kill_active_children"
-        },
-        {
-          "level": 3,
-          "text": "`find_binary`",
-          "anchor": "find_binary"
-        },
-        {
-          "level": 3,
-          "text": "`_version_lt`",
-          "anchor": "_version_lt"
-        },
-        {
-          "level": 3,
-          "text": "`check_version`",
-          "anchor": "check_version"
-        },
-        {
-          "level": 3,
-          "text": "`ProcessConfig`",
-          "anchor": "processconfig"
-        },
-        {
-          "level": 4,
-          "text": "`build_argv`",
-          "anchor": "build_argv"
-        },
-        {
-          "level": 3,
-          "text": "`ProcessManager`",
-          "anchor": "processmanager"
-        },
-        {
-          "level": 4,
-          "text": "`stdin`",
-          "anchor": "stdin"
-        },
-        {
-          "level": 4,
-          "text": "`stdout`",
-          "anchor": "stdout"
-        },
-        {
-          "level": 4,
-          "text": "`is_alive`",
-          "anchor": "is_alive"
-        },
-        {
-          "level": 4,
-          "text": "`stderr_lines`",
-          "anchor": "stderr_lines"
-        },
-        {
-          "level": 4,
-          "text": "`_drain_stderr`",
-          "anchor": "_drain_stderr"
-        },
-        {
-          "level": 4,
-          "text": "`start`",
-          "anchor": "start"
-        },
-        {
-          "level": 4,
-          "text": "`close`",
-          "anchor": "close"
-        },
-        {
-          "level": 4,
-          "text": "`kill`",
-          "anchor": "kill"
-        },
-        {
-          "level": 3,
-          "text": "Protocol (middle-lower)",
-          "anchor": "protocol-middle-lower"
+          "text": "Starting a session",
+          "anchor": "starting-a-session"
         },
         {
           "level": 2,
-          "text": "`claudestream._protocol`",
-          "anchor": "claudestream_protocol"
-        },
-        {
-          "level": 3,
-          "text": "`parse_content_block`",
-          "anchor": "parse_content_block"
-        },
-        {
-          "level": 3,
-          "text": "`parse_usage`",
-          "anchor": "parse_usage"
-        },
-        {
-          "level": 3,
-          "text": "`parse_event`",
-          "anchor": "parse_event"
-        },
-        {
-          "level": 3,
-          "text": "`_resolve_path`",
-          "anchor": "_resolve_path"
-        },
-        {
-          "level": 3,
-          "text": "`_derive_file_events`",
-          "anchor": "_derive_file_events"
-        },
-        {
-          "level": 3,
-          "text": "`flatten_event`",
-          "anchor": "flatten_event"
-        },
-        {
-          "level": 3,
-          "text": "`read_events`",
-          "anchor": "read_events"
-        },
-        {
-          "level": 3,
-          "text": "`write_message`",
-          "anchor": "write_message"
-        },
-        {
-          "level": 3,
-          "text": "Session (middle-upper)",
-          "anchor": "session-middle-upper"
+          "text": "Turns and events",
+          "anchor": "turns-and-events"
         },
         {
           "level": 2,
-          "text": "`claudestream._async_session`",
-          "anchor": "claudestream_async_session"
+          "text": "Permissions",
+          "anchor": "permissions"
         },
         {
-          "level": 3,
-          "text": "`ClaudeStreamError`",
-          "anchor": "claudestreamerror"
-        },
-        {
-          "level": 3,
-          "text": "`AsyncSession`",
-          "anchor": "asyncsession"
-        },
-        {
-          "level": 4,
-          "text": "`_enrich_flattened`",
-          "anchor": "_enrich_flattened"
-        },
-        {
-          "level": 4,
-          "text": "`_build_process_config`",
-          "anchor": "_build_process_config"
-        },
-        {
-          "level": 4,
-          "text": "`session_id`",
-          "anchor": "session_id"
-        },
-        {
-          "level": 4,
-          "text": "`model_name`",
-          "anchor": "model_name"
-        },
-        {
-          "level": 4,
-          "text": "`tools`",
+          "level": 2,
+          "text": "Tools",
           "anchor": "tools"
         },
         {
-          "level": 4,
-          "text": "`claude_version`",
-          "anchor": "claude_version"
-        },
-        {
-          "level": 4,
-          "text": "`last_result`",
-          "anchor": "last_result"
-        },
-        {
-          "level": 4,
-          "text": "`turn_count`",
-          "anchor": "turn_count"
-        },
-        {
-          "level": 4,
-          "text": "`total_tokens`",
-          "anchor": "total_tokens"
-        },
-        {
-          "level": 4,
-          "text": "`total_cost_usd`",
-          "anchor": "total_cost_usd"
-        },
-        {
-          "level": 4,
-          "text": "`stderr_lines`",
-          "anchor": "stderr_lines-1"
-        },
-        {
-          "level": 4,
-          "text": "`sandbox`",
-          "anchor": "sandbox"
-        },
-        {
-          "level": 4,
-          "text": "`user_tools`",
-          "anchor": "user_tools"
-        },
-        {
-          "level": 4,
-          "text": "`is_alive`",
-          "anchor": "is_alive-1"
-        },
-        {
-          "level": 4,
-          "text": "`active_turn`",
-          "anchor": "active_turn"
-        },
-        {
-          "level": 4,
-          "text": "`cancelled`",
-          "anchor": "cancelled"
-        },
-        {
-          "level": 4,
-          "text": "`files_modified`",
-          "anchor": "files_modified"
-        },
-        {
-          "level": 4,
-          "text": "`process_pid`",
-          "anchor": "process_pid"
-        },
-        {
-          "level": 4,
-          "text": "`cwd`",
-          "anchor": "cwd"
-        },
-        {
-          "level": 4,
-          "text": "`mcp_servers`",
-          "anchor": "mcp_servers"
-        },
-        {
-          "level": 4,
-          "text": "`permission_mode`",
-          "anchor": "permission_mode"
-        },
-        {
-          "level": 4,
-          "text": "`restart_count`",
-          "anchor": "restart_count"
-        },
-        {
-          "level": 4,
-          "text": "`config`",
-          "anchor": "config"
-        },
-        {
-          "level": 4,
-          "text": "`_start`",
-          "anchor": "_start"
-        },
-        {
-          "level": 4,
-          "text": "`_read_control_response`",
-          "anchor": "_read_control_response"
-        },
-        {
-          "level": 4,
-          "text": "`_run_mcp_handshake`",
-          "anchor": "_run_mcp_handshake"
-        },
-        {
-          "level": 4,
-          "text": "`close`",
-          "anchor": "close-1"
-        },
-        {
-          "level": 4,
-          "text": "`cancel`",
-          "anchor": "cancel"
-        },
-        {
-          "level": 4,
-          "text": "`send`",
-          "anchor": "send"
-        },
-        {
-          "level": 4,
-          "text": "`ask`",
-          "anchor": "ask"
-        },
-        {
-          "level": 4,
-          "text": "`_read_turn`",
-          "anchor": "_read_turn"
-        },
-        {
-          "level": 4,
-          "text": "`_liveness_probe`",
-          "anchor": "_liveness_probe"
-        },
-        {
-          "level": 4,
-          "text": "`_restart_subprocess`",
-          "anchor": "_restart_subprocess"
-        },
-        {
-          "level": 4,
-          "text": "`_handle_permission`",
-          "anchor": "_handle_permission"
-        },
-        {
-          "level": 4,
-          "text": "`_handle_mcp_request`",
-          "anchor": "_handle_mcp_request"
-        },
-        {
-          "level": 4,
-          "text": "`_resolve_control`",
-          "anchor": "_resolve_control"
-        },
-        {
-          "level": 4,
-          "text": "`_fail_pending_controls`",
-          "anchor": "_fail_pending_controls"
-        },
-        {
-          "level": 4,
-          "text": "`_control_request`",
-          "anchor": "_control_request"
-        },
-        {
-          "level": 4,
-          "text": "`_read_control_result`",
-          "anchor": "_read_control_result"
-        },
-        {
-          "level": 4,
-          "text": "`_check_thresholds`",
-          "anchor": "_check_thresholds"
-        },
-        {
-          "level": 4,
-          "text": "`_write_cost_log`",
-          "anchor": "_write_cost_log"
-        },
-        {
-          "level": 4,
-          "text": "`on`",
-          "anchor": "on"
-        },
-        {
-          "level": 4,
-          "text": "`on_turn_complete`",
-          "anchor": "on_turn_complete"
-        },
-        {
-          "level": 4,
-          "text": "`on_error`",
-          "anchor": "on_error"
-        },
-        {
-          "level": 4,
-          "text": "`on_close`",
-          "anchor": "on_close"
-        },
-        {
-          "level": 4,
-          "text": "`_fire_hooks`",
-          "anchor": "_fire_hooks"
-        },
-        {
-          "level": 4,
-          "text": "`respond_allow`",
-          "anchor": "respond_allow"
-        },
-        {
-          "level": 4,
-          "text": "`respond_deny`",
-          "anchor": "respond_deny"
-        },
-        {
-          "level": 4,
-          "text": "`respond_dialog`",
-          "anchor": "respond_dialog"
-        },
-        {
-          "level": 4,
-          "text": "`respond_dialog_cancelled`",
-          "anchor": "respond_dialog_cancelled"
-        },
-        {
-          "level": 4,
-          "text": "`interrupt`",
-          "anchor": "interrupt"
-        },
-        {
-          "level": 4,
-          "text": "`set_permission_mode`",
-          "anchor": "set_permission_mode"
-        },
-        {
-          "level": 4,
-          "text": "`set_model`",
-          "anchor": "set_model"
-        },
-        {
-          "level": 4,
-          "text": "`get_context_usage`",
-          "anchor": "get_context_usage"
+          "level": 2,
+          "text": "Budgets",
+          "anchor": "budgets"
         },
         {
           "level": 2,
-          "text": "`claudestream._sync_session`",
-          "anchor": "claudestream_sync_session"
-        },
-        {
-          "level": 3,
-          "text": "`SyncSession`",
-          "anchor": "syncsession"
-        },
-        {
-          "level": 4,
-          "text": "`_run_loop`",
-          "anchor": "_run_loop"
-        },
-        {
-          "level": 4,
-          "text": "`_ensure_loop`",
-          "anchor": "_ensure_loop"
-        },
-        {
-          "level": 4,
-          "text": "`_run_coro`",
-          "anchor": "_run_coro"
-        },
-        {
-          "level": 4,
-          "text": "`close`",
-          "anchor": "close-2"
-        },
-        {
-          "level": 4,
-          "text": "`session_id`",
-          "anchor": "session_id-1"
-        },
-        {
-          "level": 4,
-          "text": "`model_name`",
-          "anchor": "model_name-1"
-        },
-        {
-          "level": 4,
-          "text": "`tools`",
-          "anchor": "tools-1"
-        },
-        {
-          "level": 4,
-          "text": "`claude_version`",
-          "anchor": "claude_version-1"
-        },
-        {
-          "level": 4,
-          "text": "`last_result`",
-          "anchor": "last_result-1"
-        },
-        {
-          "level": 4,
-          "text": "`files_modified`",
-          "anchor": "files_modified-1"
-        },
-        {
-          "level": 4,
-          "text": "`stderr_lines`",
-          "anchor": "stderr_lines-2"
-        },
-        {
-          "level": 4,
-          "text": "`turn_count`",
-          "anchor": "turn_count-1"
-        },
-        {
-          "level": 4,
-          "text": "`total_tokens`",
-          "anchor": "total_tokens-1"
-        },
-        {
-          "level": 4,
-          "text": "`total_cost_usd`",
-          "anchor": "total_cost_usd-1"
-        },
-        {
-          "level": 4,
-          "text": "`sandbox`",
-          "anchor": "sandbox-1"
-        },
-        {
-          "level": 4,
-          "text": "`user_tools`",
-          "anchor": "user_tools-1"
-        },
-        {
-          "level": 4,
-          "text": "`is_alive`",
-          "anchor": "is_alive-2"
-        },
-        {
-          "level": 4,
-          "text": "`active_turn`",
-          "anchor": "active_turn-1"
-        },
-        {
-          "level": 4,
-          "text": "`cancelled`",
-          "anchor": "cancelled-1"
-        },
-        {
-          "level": 4,
-          "text": "`process_pid`",
-          "anchor": "process_pid-1"
-        },
-        {
-          "level": 4,
-          "text": "`cwd`",
-          "anchor": "cwd-1"
-        },
-        {
-          "level": 4,
-          "text": "`mcp_servers`",
-          "anchor": "mcp_servers-1"
-        },
-        {
-          "level": 4,
-          "text": "`permission_mode`",
-          "anchor": "permission_mode-1"
-        },
-        {
-          "level": 4,
-          "text": "`config`",
-          "anchor": "config-1"
-        },
-        {
-          "level": 4,
-          "text": "`cancel`",
-          "anchor": "cancel-1"
-        },
-        {
-          "level": 4,
-          "text": "`ask`",
-          "anchor": "ask-1"
-        },
-        {
-          "level": 4,
-          "text": "`send`",
-          "anchor": "send-1"
-        },
-        {
-          "level": 4,
-          "text": "`on`",
-          "anchor": "on-1"
-        },
-        {
-          "level": 4,
-          "text": "`on_turn_complete`",
-          "anchor": "on_turn_complete-1"
-        },
-        {
-          "level": 4,
-          "text": "`on_error`",
-          "anchor": "on_error-1"
-        },
-        {
-          "level": 4,
-          "text": "`on_close`",
-          "anchor": "on_close-1"
-        },
-        {
-          "level": 4,
-          "text": "`respond_allow`",
-          "anchor": "respond_allow-1"
-        },
-        {
-          "level": 4,
-          "text": "`respond_deny`",
-          "anchor": "respond_deny-1"
-        },
-        {
-          "level": 4,
-          "text": "`respond_dialog`",
-          "anchor": "respond_dialog-1"
-        },
-        {
-          "level": 4,
-          "text": "`respond_dialog_cancelled`",
-          "anchor": "respond_dialog_cancelled-1"
-        },
-        {
-          "level": 4,
-          "text": "`interrupt`",
-          "anchor": "interrupt-1"
-        },
-        {
-          "level": 4,
-          "text": "`set_permission_mode`",
-          "anchor": "set_permission_mode-1"
-        },
-        {
-          "level": 4,
-          "text": "`set_model`",
-          "anchor": "set_model-1"
-        },
-        {
-          "level": 4,
-          "text": "`get_context_usage`",
-          "anchor": "get_context_usage-1"
-        },
-        {
-          "level": 3,
-          "text": "CLI (top)",
-          "anchor": "cli-top"
+          "text": "Control methods",
+          "anchor": "control-methods"
         },
         {
           "level": 2,
-          "text": "`claudestream._cli`",
-          "anchor": "claudestream_cli"
-        },
-        {
-          "level": 3,
-          "text": "`_get_version`",
-          "anchor": "_get_version"
-        },
-        {
-          "level": 3,
-          "text": "`_opt`",
-          "anchor": "_opt"
-        },
-        {
-          "level": 3,
-          "text": "`_resolve_prompt`",
-          "anchor": "_resolve_prompt"
-        },
-        {
-          "level": 3,
-          "text": "`_build_config`",
-          "anchor": "_build_config"
-        },
-        {
-          "level": 3,
-          "text": "`_run_with_session`",
-          "anchor": "_run_with_session"
-        },
-        {
-          "level": 3,
-          "text": "`_stream_events`",
-          "anchor": "_stream_events"
-        },
-        {
-          "level": 3,
-          "text": "`cmd_send`",
-          "anchor": "cmd_send"
-        },
-        {
-          "level": 3,
-          "text": "`cmd_stream`",
-          "anchor": "cmd_stream"
-        },
-        {
-          "level": 3,
-          "text": "`cmd_events`",
-          "anchor": "cmd_events"
-        },
-        {
-          "level": 3,
-          "text": "`cmd_repl`",
-          "anchor": "cmd_repl"
-        },
-        {
-          "level": 3,
-          "text": "`cmd_agent_run`",
-          "anchor": "cmd_agent_run"
-        },
-        {
-          "level": 3,
-          "text": "`cmd_agent_list`",
-          "anchor": "cmd_agent_list"
-        },
-        {
-          "level": 3,
-          "text": "`cmd_agent_info`",
-          "anchor": "cmd_agent_info"
-        },
-        {
-          "level": 3,
-          "text": "`cmd_agent_validate`",
-          "anchor": "cmd_agent_validate"
-        },
-        {
-          "level": 3,
-          "text": "`cmd_ask`",
-          "anchor": "cmd_ask"
-        },
-        {
-          "level": 3,
-          "text": "`cmd_doctor`",
-          "anchor": "cmd_doctor"
-        },
-        {
-          "level": 3,
-          "text": "`cmd_config`",
-          "anchor": "cmd_config"
-        },
-        {
-          "level": 3,
-          "text": "`EventPrinter`",
-          "anchor": "eventprinter"
-        },
-        {
-          "level": 4,
-          "text": "`print_event`",
-          "anchor": "print_event"
-        },
-        {
-          "level": 3,
-          "text": "`_print_json`",
-          "anchor": "_print_json"
-        },
-        {
-          "level": 3,
-          "text": "`main`",
-          "anchor": "main"
+          "text": "Closing",
+          "anchor": "closing"
         },
         {
           "level": 2,
-          "text": "Event lifecycle",
-          "anchor": "event-lifecycle"
-        },
-        {
-          "level": 2,
-          "text": "The streaming model",
-          "anchor": "the-streaming-model"
-        },
-        {
-          "level": 3,
-          "text": "Async iteration",
-          "anchor": "async-iteration"
-        },
-        {
-          "level": 3,
-          "text": "Raw vs. flattened mode",
-          "anchor": "raw-vs-flattened-mode"
-        },
-        {
-          "level": 3,
-          "text": "Real-time streaming",
-          "anchor": "real-time-streaming"
-        },
-        {
-          "level": 3,
-          "text": "Event filtering by type",
-          "anchor": "event-filtering-by-type"
-        },
-        {
-          "level": 3,
-          "text": "Callbacks",
-          "anchor": "callbacks"
-        },
-        {
-          "level": 2,
-          "text": "Permission handling",
-          "anchor": "permission-handling"
-        },
-        {
-          "level": 3,
-          "text": "Automatic: sandbox policies",
-          "anchor": "automatic-sandbox-policies"
-        },
-        {
-          "level": 2,
-          "text": "`claudestream.policy`",
-          "anchor": "claudestreampolicy"
-        },
-        {
-          "level": 3,
-          "text": "`Allow`",
-          "anchor": "allow"
-        },
-        {
-          "level": 3,
-          "text": "`Deny`",
-          "anchor": "deny"
-        },
-        {
-          "level": 3,
-          "text": "`Sandbox`",
-          "anchor": "sandbox-2"
-        },
-        {
-          "level": 3,
-          "text": "`create_sandbox`",
-          "anchor": "create_sandbox"
-        },
-        {
-          "level": 3,
-          "text": "`sandbox_to_flags`",
-          "anchor": "sandbox_to_flags"
-        },
-        {
-          "level": 3,
-          "text": "`_resolve_path`",
-          "anchor": "_resolve_path-1"
-        },
-        {
-          "level": 3,
-          "text": "`_is_within`",
-          "anchor": "_is_within"
-        },
-        {
-          "level": 3,
-          "text": "`sandbox_decide`",
-          "anchor": "sandbox_decide"
-        },
-        {
-          "level": 3,
-          "text": "Manual: consumer-driven permission handling",
-          "anchor": "manual-consumer-driven-permission-handling"
-        },
-        {
-          "level": 3,
-          "text": "User dialog requests",
-          "anchor": "user-dialog-requests"
-        },
-        {
-          "level": 2,
-          "text": "Common usage patterns",
-          "anchor": "common-usage-patterns"
-        },
-        {
-          "level": 3,
-          "text": "One-shot ask",
-          "anchor": "one-shot-ask"
-        },
-        {
-          "level": 3,
-          "text": "Multi-turn conversation",
-          "anchor": "multi-turn-conversation"
-        },
-        {
-          "level": 3,
-          "text": "Registering custom tools",
-          "anchor": "registering-custom-tools"
-        },
-        {
-          "level": 3,
-          "text": "Lifecycle hooks",
-          "anchor": "lifecycle-hooks"
-        },
-        {
-          "level": 3,
-          "text": "Budget observation",
-          "anchor": "budget-observation"
-        },
-        {
-          "level": 3,
-          "text": "Mid-session control",
-          "anchor": "mid-session-control"
-        },
-        {
-          "level": 3,
-          "text": "Agent definitions",
-          "anchor": "agent-definitions"
-        },
-        {
-          "level": 2,
-          "text": "Transparent recovery",
-          "anchor": "transparent-recovery"
+          "text": "The command line",
+          "anchor": "the-command-line"
         }
       ]
     },
@@ -3174,49 +978,24 @@
         },
         {
           "level": 2,
-          "text": "Quick Start",
+          "text": "Quick start",
           "anchor": "quick-start"
         },
         {
-          "level": 3,
-          "text": "Async",
-          "anchor": "async"
-        },
-        {
-          "level": 3,
-          "text": "Sync",
-          "anchor": "sync"
-        },
-        {
-          "level": 3,
-          "text": "One-shot",
-          "anchor": "one-shot"
-        },
-        {
-          "level": 3,
-          "text": "Multi-turn",
-          "anchor": "multi-turn"
+          "level": 2,
+          "text": "Command line",
+          "anchor": "command-line"
         },
         {
           "level": 2,
-          "text": "CLI",
-          "anchor": "cli"
-        },
-        {
-          "level": 2,
-          "text": "Permission Policies",
-          "anchor": "permission-policies"
-        },
-        {
-          "level": 2,
-          "text": "Event Types",
-          "anchor": "event-types"
+          "text": "Where to go next",
+          "anchor": "where-to-go-next"
         }
       ]
     }
   ],
   "posts": [],
-  "last_gen": "2026-09-30T16:34:09.154380+00:00",
+  "last_gen": "2026-10-08T15:50:25.451819+00:00",
   "theme": "minimal",
   "vocabulary": {
     "accepted": [
@@ -3226,6 +1005,10 @@
       },
       {
         "word": "claudewheel",
+        "aliases": []
+      },
+      {
+        "word": "goroutine",
         "aliases": []
       },
       {

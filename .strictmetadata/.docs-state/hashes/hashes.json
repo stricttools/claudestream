@@ -26,19 +26,23 @@
   },
   "en/cli-agent.md": {
     "content": "b90c5b14e7f3e02f40a281cf02f09eb06f128d26d68040c8e8446eea9b60efda",
-    "description": "c0e7946e26a0018ead76725d460c230a4aac103d6cac76179a49e651f3526fae"
+    "description": "c0e7946e26a0018ead76725d460c230a4aac103d6cac76179a49e651f3526fae",
+    "schema_hash": "8c68aae9c3aac95e56203d3f481219a01e3732f97501217588069c8fb868d8c5"
   },
   "en/cli-ask.md": {
     "content": "71b02f55760d6e9e0309393f7253838006af8a6a93ab6c82ab8ae8bfd9a1c0a9",
-    "description": "6c4257c52fdc23931219b994e6a4608534b23481efa7f297725cd5b8da04383e"
+    "description": "6c4257c52fdc23931219b994e6a4608534b23481efa7f297725cd5b8da04383e",
+    "schema_hash": "024153a9801d897b6d1353d79b383f0f55ce51f6552b5570bb8b6717eca28a93"
   },
   "en/cli-doctor.md": {
     "content": "efcc000b6e11bd1f9c729fafac07eb987d2bb0089eb12a10d49f2b5acd063e94",
-    "description": "b271cb42deb1dbec0efe73e163a12de36e5a3514411828a085fc72169011c6b8"
+    "description": "b271cb42deb1dbec0efe73e163a12de36e5a3514411828a085fc72169011c6b8",
+    "schema_hash": "24605e1b1150f1bb7bafde727210a95acf8a2a899e352588adc0573321031d91"
   },
   "en/cli-events.md": {
     "content": "e3768c3bf383f0887041219ceb49f6b0d43d2b6f71a179e585649841d7c0639d",
-    "description": "43b42a2997f02e063d7fc4e7f040b3da05b35e9ae6060ef198bd8a7041fbb2da"
+    "description": "43b42a2997f02e063d7fc4e7f040b3da05b35e9ae6060ef198bd8a7041fbb2da",
+    "schema_hash": "ef52686704597d46d85a426fa8beb731c9b74710d8147857e99ab531d56330db"
   },
   "en/cli-index.md": {
     "content": "bf2b6cadfe9f4820158072cdcd0a9d0be8b98263fce9496cb31cb55c4c6f8c45",
@@ -47,11 +51,13 @@
   },
   "en/cli-send.md": {
     "content": "ec64d0f4d3693c6006f1b781b423f19760ab3e78d1d98a7163e7b735c29c689e",
-    "description": "410a29e5d1d3c1e0cf641c1840773413464668c20fb35c81c6377272931d5c71"
+    "description": "410a29e5d1d3c1e0cf641c1840773413464668c20fb35c81c6377272931d5c71",
+    "schema_hash": "74638ee6d5a93ea99778790aa07fbce54dcf6832d763ff33c2ae4ad11b805fe3"
   },
   "en/cli-stream.md": {
     "content": "5bcc95baa10eae01fc56663743094998c74a0113ed018e66f33f6cedcb65544a",
-    "description": "d9b6e54ddb23d5361768bcf2d3c43596c908a11191828438e40c5d2e35b4e41b"
+    "description": "d9b6e54ddb23d5361768bcf2d3c43596c908a11191828438e40c5d2e35b4e41b",
+    "schema_hash": "09e06396fbcaaf844545f9542ed837ee40751acf011509c38fc3356949753527"
   },
   "en/gen-index.md": {
     "content": "77b26abe69da3a05549e49ce64a424607918ca7cfb8913353870f1d7ae523870",
