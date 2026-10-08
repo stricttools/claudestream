@@ -5,213 +5,96 @@ title = "CLAUDE.md"
 
 :-: var key="project.description"
 
-## Architecture
+## Layout
 
-claudestream has four layers, each building on the one below:
-
-- **Process** (`_process.py`): Spawns and manages the Claude Code subprocess. `ProcessConfig` maps configuration to CLI flags. `ProcessManager` handles lifecycle (start, graceful shutdown, kill) with atexit cleanup.
-- **Protocol** (`_protocol.py`): Reads NDJSON lines from the subprocess stdout and decodes them into typed `Event` objects. Writes `Message` objects as NDJSON to stdin. Handles event flattening (expanding `AssistantMessage` into individual `AssistantText`, `ToolUse`, `Thinking` events) and derives `FileWrite`/`FileEdit` events from tool calls.
-- **Session** (`_async_session.py`, `_sync_session.py`): Manages turn-based conversation state on top of the protocol layer. `AsyncSession` is the primary implementation; `SyncSession` wraps it with a dedicated event loop thread. Sessions handle permission interception via sandbox policies, MCP tool serving, lifecycle hooks, and event callbacks.
-- **CLI** (`_cli.py`): strictcli-based commands (`send`, `stream`, `ask`, `repl`, `events`, `agent`, `doctor`, `config`) that build `SessionConfig` from flags and run sessions.
-
-The `@tool` decorator (`_tools.py`) and agent definitions (`_agent.py`) are cross-cutting: tools are served via MCP to the subprocess, and agents compose config + sandbox + budget + tools into reusable definitions.
-
-## Modules
-
-:-: list-modules path="claudestream/"
+- The root package `claudestream` is the library: `config.go` (the config and its validation), `argv.go` (Claude Code's command line), `launch.go` (binary resolution, the version check, and the `claudewheel profile exec` argv), `process.go` (the subprocess and its pipes), `wire.go` and `events.go` (decoding stdout lines into events), `messages.go` (outgoing frames), `session.go` (sessions and turns), `control.go` (control requests, answers, and the stdin writer), `sandbox.go`, `mcp.go` (the SDK MCP servers), `budget.go`, and `errors.go`.
+- `agent` loads `.agent.toml` agent definitions and starts sessions from them.
+- `cmd/claudestream` is the binary; `internal/cli` its strictcli commands; `internal/printer` the renderings of the session commands.
+- `internal/vcr` is the test suites' stand-in for the claude binary, imported only by tests.
 
 ## Commands
 
 :-: table-commands
 
-## SessionConfig
+## Config
 
-The unified configuration object. Both `model` and `profile` are required; everything else is optional.
-
-:-: table-schema path="claudestream/_options.py" target="SessionConfig"
-
-## Budget
-
-:-: table-schema path="claudestream/_options.py" target="Budget"
-
-## Sandbox
-
-:-: table-schema path="claudestream/policy.py" target="Sandbox"
-
-## AgentDefinition
-
-:-: table-schema path="claudestream/_agent.py" target="AgentDefinition"
-
-## ToolSchema
-
-:-: table-schema path="claudestream/_options.py" target="ToolSchema"
-
-## ProcessConfig
-
-Internal struct mapping SessionConfig to subprocess CLI flags. Not part of the public API but useful for understanding how configuration flows to the process.
-
-:-: table-schema path="claudestream/_process.py" target="ProcessConfig"
+`Config` (in `config.go`) describes one session: `Model`, `Profile`, `ClaudeBinary`, `ClaudewheelBinary`, and `Session` are required, every other field is optional and its zero value adds nothing to the command line, and `Config.Validate` reports every problem at once, each wrapping `ErrInvalidConfig`. Its fields are documented in the source and on the API reference page.
 
 ## Code patterns
 
-### Send and iterate events
+### Start a session and read a turn
 
-```python
-from claudestream import SessionConfig, SyncSession, AssistantText, ToolUse, Result
+```go
+session, err := claudestream.Start(ctx, claudestream.Config{
+	Model:             "sonnet",
+	Profile:           "default",
+	ClaudeBinary:      claude,      // absolute path; the library never searches PATH
+	ClaudewheelBinary: claudewheel, // absolute path
+	Session:           claudestream.NewSession{},
+})
+if err != nil {
+	return err
+}
+defer session.Close()
 
-config = SessionConfig(model="sonnet", profile="default")
-with SyncSession(config) as session:
-    for event in session.send("prompt"):
-        if isinstance(event, AssistantText):
-            print(event.text, end="")
-        elif isinstance(event, ToolUse):
-            print(f"[tool: {event.name}]")
-        elif isinstance(event, Result):
-            print(f"cost=${event.total_cost_usd:.4f}")
+turn, err := session.Send(ctx, "prompt")
+if err != nil {
+	return err
+}
+for {
+	event, err := turn.Next(ctx)
+	if errors.Is(err, io.EOF) {
+		break
+	}
+	if err != nil {
+		return err
+	}
+	switch e := event.(type) {
+	case claudestream.AssistantText:
+		fmt.Print(e.Text)
+	case claudestream.ToolUse:
+		fmt.Printf("[tool: %s]\n", e.Name)
+	case claudestream.PermissionRequest:
+		if err := session.RespondAllow(ctx, e.RequestID, e.ToolInput, nil); err != nil {
+			return err
+		}
+	}
+}
 ```
 
-### One-shot ask
+### Sandbox
 
-```python
-config = SessionConfig(model="sonnet", profile="default")
-with SyncSession(config) as session:
-    result = session.ask("prompt")
-    print(result.text)
+```go
+cfg.Sandbox = &claudestream.Sandbox{Tools: []string{"Read", "Bash"}, WritePaths: []string{"/project"}}
 ```
 
-### Async session
+A sandbox answers every permission request itself, and the turn yields `PermissionDecided` instead of `PermissionRequest`.
 
-```python
-async with AsyncSession(config) as session:
-    async for event in session.send("prompt"):
-        ...
+### Run an agent definition
+
+```go
+def, err := agent.LoadByName(cwd, "reviewer")
+if err != nil {
+	return err
+}
+session, err := agent.Invoke(ctx, def, base, map[string]string{"repo": cwd}, handlers)
 ```
 
-### Register a tool
+## Testing
 
-```python
-from claudestream import tool
-
-@tool("my_server")
-def search(query: str) -> str:
-    """Search for something.
-
-    Args:
-        query: The search query.
-    """
-    return "result"
-
-config = SessionConfig(model="sonnet", profile="default", tools=[search._tool])
-```
-
-### Load and invoke an agent
-
-```python
-from claudestream import load_agent, invoke_agent_sync
-
-agent = load_agent("agent_name")
-config = SessionConfig(model="sonnet", profile="default")
-with invoke_agent_sync(agent, config, variables={"key": "value"}) as session:
-    for event in session.send("prompt"):
-        ...
-```
-
-### Set up a sandbox
-
-```python
-from claudestream import create_sandbox
-
-sandbox = create_sandbox(tools=["Read", "Bash"], write_paths=["/project"])
-config = SessionConfig(model="sonnet", profile="default", sandbox=sandbox)
-```
-
-### Handle permissions manually
-
-```python
-from claudestream import SessionConfig, SyncSession, PermissionRequest
-
-config = SessionConfig(model="sonnet", profile="default")
-with SyncSession(config) as session:
-    for event in session.send("prompt", raw=True):
-        if isinstance(event, PermissionRequest):
-            session.respond_allow(event.request_id, event.tool_input)
-```
-
-### Lifecycle hooks
-
-```python
-def on_done(session, result):
-    print(f"Turn complete: {result.num_turns} turns, ${result.total_cost_usd:.4f}")
-
-session.on_turn_complete(on_done)
-```
-
-## Testing lanes
-
-The suite has three lanes. Only the first runs by default, and it cannot spend money.
-
-| Lane | How to run | Cost | What it covers |
-| --- | --- | --- | --- |
-| Default | `uv run pytest` | none | Unit tests plus the replay lane |
-| Replay (VCR) | `uv run pytest tests/test_replay.py` | none | The real subprocess/pipe/NDJSON stack against recorded cassettes |
-| Live | `CLAUDESTREAM_INTEGRATION=1 uv run pytest -m integration` | real API spend | The real `claude` binary against a real profile |
-
-The live lane is explicit opt-in. Without `CLAUDESTREAM_INTEGRATION=1` every
-`@pytest.mark.integration` test is skipped at collection, and a poisoned `claude`
-shim is prepended to `PATH` so nothing else can resolve a real binary by name
-either. Both hooks live in the **repository-root `conftest.py`**, so they cover
-every `pytest` invocation rooted here — `pytest scripts/` included, not just
-`pytest tests/` — and each run prints `claudestream spend guard: ARMED` in its
-header. Tests must therefore name the binary (`BINARY = "claude"`) rather than
-pin an absolute path, which the shim cannot intercept.
-`tests/test_spend_guard.py` pins all of it. Run the live lane
-deliberately — on a CLI version bump, or when protocol drift is suspected. It is
-the drift detector; the replay lane pins the library against a known protocol
-version.
-
-Replay works through first-class knobs, not monkeypatching: the binary is
-redirected with `SessionConfig.binary` to `tests/fixtures/claude_vcr.py`, and the
-profile with claudewheel's `CLAUDEWHEEL_CONFIG_DIR` workspace root pointed at a
-throwaway workspace, so `resolve_profile` runs for real and yields no token.
-
-Re-record cassettes with `scripts/record_transcripts.py`, which drives real
-sessions through the stand-in binary in record mode:
-
-```bash
-# Control plane only: no credentials, no spend
-scripts/record_transcripts.py --lane free
-
-# Scenarios needing a real model answer -- BILLS THE NAMED PROFILE
-scripts/record_transcripts.py --lane paid --profile <name>
-```
-
-Recording scrubs machine-local inventory so cassettes are safe to publish:
-`cwd`, `pid`, and the inventory keys (`slash_commands`, `commands`, `skills`,
-`agents`, `models`, `plugins`, `available_output_styles`, `memory_paths`) are
-emptied **whatever type they arrive as** — dict, list or string — and the
-`tools` list is filtered to a public-tool allowlist so the recording machine's
-private tool surface never ships. `tests/test_cassette_hygiene.py` is the
-backstop: it greps every committed cassette for home directories, temp
-directories, `$HOME`, the operator's username as a path segment, and
-absolute-path shapes, so a protocol key the scrubber has never heard of cannot
-leak silently. Stale cassettes between re-records are fine: replay pins a known
-protocol version, and the live lane is what notices the world moved.
+`go test ./...` runs every test without Claude Code, credentials, or spend. The session tests start real subprocesses over real pipes: the test binary itself becomes the claude stand-in (`internal/vcr`) when `CLAUDESTREAM_VCR_MODE=replay`, replaying a cassette and checking the shape of each line the session sends. The cassettes under `tests/fixtures/transcripts/` were recorded from Claude Code 2.1.220; the Go tests also write synthetic cassettes, which may hold `raw` lines and an `exit` record. A claudewheel stand-in script runs what follows `--` in `profile exec`, and the command line tests run the app in a child process, since the session commands write to the process's stdout and stderr.
 
 ## Release workflow
 
 This project uses [rlsbl](https://github.com/stricttools/rlsbl) for release orchestration.
 
-- Update CHANGELOG.md with a `## X.Y.Z` entry describing changes
-- Run `rlsbl release init` to scaffold the release file, set the bump type, then `rlsbl release run`
-- CI handles publishing automatically via the publish workflow
-- Never publish manually — always use `rlsbl release run`
-- Configure Trusted Publishing on pypi.org for automated PyPI releases
-- Use `rlsbl --dry-run release run` to preview a release without making changes
+- Add a changelog entry for every change with `rlsbl changelog add`.
+- Run `rlsbl release init`, set the release file's bump and description, then `rlsbl release run --watch`.
+- CI tests the release commit, and the publish workflow builds the Linux and macOS archives of the `claudestream` binary with GoReleaser and attaches them to the GitHub Release. Never publish by hand.
+- The module is installed with `go install github.com/stricttools/claudestream/cmd/claudestream@v0`. Versions up to 0.15.3 were a Python package on PyPI and npm; nothing newer is published there.
 
 ## Conventions
 
-- No tokens or secrets in command-line arguments (use env vars or config files)
-- All file writes to shared state should be atomic (write to tmp, then rename)
-- External calls (APIs, CLI tools) must have timeouts and graceful fallbacks
-- Use `npm link` (npm) or `uv pip install -e .` (Python) for local development
-- CI runs smoke tests on every push; manual testing for UI/UX changes
+- Every config value that matters is explicit: no implicit defaults for the model, the profile, the binaries, the session, or the permission posture.
+- A frame the session cannot handle is never dropped: it becomes an event (`UnknownEvent`, `UndecodableEvent`, `NonJSONLine`, `UnknownControlRequest`), and a control request the session does not handle is answered with an error so Claude Code never waits for it.
+- No tokens or secrets in command-line arguments: the profile's environment reaches Claude Code through `claudewheel profile exec`.

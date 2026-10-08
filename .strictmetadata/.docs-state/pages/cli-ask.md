@@ -1,8 +1,7 @@
 +++
 title = "claudestream ask"
-description = "Send a prompt to Claude and print only the final response text"
+description = "Send one prompt to Claude Code under a claudewheel profile and print only the reply's final text, or with --json the reply and its metadata."
 generated = true
-seeded = true
 nav_group = "CLI Reference"
 nav_order = 2
 +++
@@ -10,26 +9,30 @@ nav_order = 2
 
 # claudestream ask
 
-Send a prompt to Claude and print only the final response text
+Send one prompt to Claude Code and print only the reply's final text on stdout; with --json, the reply and its metadata are the document's payload. A turn that Claude Code ends with an error exits 1 with the result text on stderr
 
 **Effect:** mutating
+
+**Dry run:** not supported — Claude Code runs as a subprocess whose file edits, commands, and API spend happen outside the effects handle, so a dry run could record none of them
 
 ## Flags
 
 | Name | Short | Type | Presence | Env | Description |
 | --- | --- | --- | --- | --- | --- |
-| `--model` | `-m` | str | required |  | Claude model identifier to use for this session (e.g. sonnet) |
-| `--profile` |  | str | required |  | Name of the claudewheel profile for authentication |
-| `--cwd` |  | str | optional |  | Working directory path for the Claude Code process to operate in; when omitted the subprocess inherits this process's directory |
-| `--skip-permissions`, `--no-skip-permissions` |  | bool | optional |  | Bypass all tool permission prompts via --dangerously-skip-permissions (permissions enforced when neither --skip-permissions nor --no-skip-permissions is passed) |
-| `--system-prompt` | `-s` | str | optional |  | Custom system prompt text to prepend to the session context; when omitted the session carries no custom system prompt |
-| `--stdin`, `--no-stdin` |  | bool | optional |  | Read the prompt text from standard input instead of an argument (the prompt argument is used when neither --stdin nor --no-stdin is passed) |
-| `--json-output`, `--no-json-output` |  | bool | optional |  | Serialize the AskResult response object as a JSON line on stdout (the response text alone when neither --json-output nor --no-json-output is passed) |
-| `--color`, `--no-color` |  | bool | optional |  | Enable ANSI colored output for terminal display and formatting (enabled, subject to TTY and NO_COLOR detection, when neither --color nor --no-color is passed) |
-| `--from-pr` |  | str | optional |  | Load context from a GitHub pull request identifier to resume; when omitted no pull request context is loaded |
-
-## Arguments
-
-| Name | Type | Presence | Description |
-| --- | --- | --- | --- |
-| `prompt` | str | optional | The text prompt to send to the Claude Code session; omit it and pass --stdin to read the prompt from standard input |
+| `--model` | `-m` | str | required |  | Claude model for the session, passed to Claude Code as --model (an alias such as sonnet or opus, or a full model ID) |
+| `--profile` |  | str | required |  | claudewheel profile the session runs under: Claude Code is started as `claudewheel profile exec --name <profile> -- <claude> ...`, which gives it the profile's environment |
+| `prompt-source` |  | choice | required |  | Selection (not typed as a flag). Elect exactly one of `--prompt`, `--prompt-from-stdin`. Where the prompt comes from: pass --prompt or --prompt-from-stdin |
+| &nbsp;&nbsp;&nbsp;&nbsp;`--prompt` |  | str | required |  | Elects `prompt-source` = `prompt`. send this flag's value as the prompt Its value: Prompt text to send |
+| &nbsp;&nbsp;&nbsp;&nbsp;`--prompt-from-stdin` |  |  | required |  | Elects `prompt-source` = `prompt-from-stdin`. read the prompt from standard input |
+| `session` |  | choice | required |  | Selection (not typed as a flag). Elect exactly one of `--new-session`, `--resume`, `--continue-session`. Which Claude Code session to use: pass --new-session, --resume, or --continue-session |
+| &nbsp;&nbsp;&nbsp;&nbsp;`--new-session` |  |  | required |  | Elects `session` = `new-session`. start a new session |
+| &nbsp;&nbsp;&nbsp;&nbsp;`--resume` |  | str | required |  | Elects `session` = `resume`. resume the session with this ID Its value: ID of the session to resume |
+| &nbsp;&nbsp;&nbsp;&nbsp;`--continue-session` |  |  | required |  | Elects `session` = `continue-session`. continue the most recent session in the working directory |
+| `--skip-permissions`, `--no-skip-permissions` |  | bool | required |  | Required either way: --skip-permissions runs Claude Code with --dangerously-skip-permissions, so no tool use is checked; --no-skip-permissions keeps Claude Code's permission checks, so tools that need permission are refused |
+| `--cwd` |  | str | optional |  | Working directory for Claude Code; when omitted, Claude Code runs in this process's working directory |
+| `--system-prompt` | `-s` | str | optional |  | System prompt for the session, passed to Claude Code as --system-prompt; when omitted, Claude Code uses its own |
+| `--from-pr` |  | str | optional |  | GitHub pull request to load into the session, passed to Claude Code as --from-pr; when omitted, none is loaded |
+| `--claude-binary` |  | str | optional |  | Absolute path of the Claude Code executable; when omitted, `claude` is looked up on PATH |
+| `--claudewheel-binary` |  | str | optional |  | Absolute path of the claudewheel executable; when omitted, `claudewheel` is looked up on PATH |
+| `--color`, `--no-color` |  | bool | optional |  | --color colors the output and --no-color does not; when neither is passed, stdout and stderr are each colored only when they are a terminal and NO_COLOR is unset or empty |
+| `--footer`, `--no-footer` |  | bool | optional |  | --footer writes a line with the turn's duration and cost to stderr after the reply and --no-footer does not; when neither is passed, the line is written (events with --json never writes it: its stderr carries the --json document) |

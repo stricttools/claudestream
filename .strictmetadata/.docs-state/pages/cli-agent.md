@@ -1,8 +1,7 @@
 +++
 title = "claudestream agent"
-description = "Manage and run agents defined in .agent.json files."
+description = "Run and inspect claudestream agent definitions, strict .agent.toml files with a prompt template, from the command line: agent run, list, info, and validate."
 generated = true
-seeded = true
 nav_group = "CLI Reference"
 nav_order = 1
 +++
@@ -10,35 +9,44 @@ nav_order = 1
 
 # claudestream agent
 
-Manage and run agents defined in .agent.json files. Agent definitions declare a model, prompt template, allowed tools with input schemas, sandbox permissions, and budget limits (cost, turns, tokens). Use subcommands to validate configurations, run agents against prompts, and inspect metadata.
+Run and inspect agent definitions: strict TOML files at .claudestream/agents/<name>.agent.toml (format_version = 2) that declare a prompt template with {variable} placeholders and, optionally, a model, tools, a sandbox, budget thresholds, MCP servers, and stream options
 
 ## agent run
 
-Load an agent definition and run it with the given prompt. Accepts a path to a .agent.json file or a bare agent name (resolved from .claudestream/agents/). The definition specifies the model, a prompt template with {variable} placeholders, tool schemas, sandbox policy, and budget constraints. Use --var key=value to substitute template variables. Use --model to override the model declared in the definition.
+Run one prompt through an agent definition and write the reply's text to stdout as it arrives, with markers on stderr as the stream command writes them. The agent's resolved prompt template becomes the system prompt, its name the session name, and its sandbox, budget, MCP, and stream tables replace the defaults. With --agent-name, the agents directory is searched under --cwd, or under the current directory when --cwd is omitted. Agents that declare tools are refused: their handlers exist only in Go programs that call the agent package. A turn that Claude Code ends with an error exits 1 with the result text on stderr
 
 **Effect:** mutating
 
+**Dry run:** not supported — Claude Code runs as a subprocess whose file edits, commands, and API spend happen outside the effects handle, so a dry run could record none of them
+
 ### Flags
 
 | Name | Short | Type | Presence | Env | Description |
 | --- | --- | --- | --- | --- | --- |
-| `--var` |  | list[str] | default: `[]` |  | Template variable in key=value format, repeatable for multiple variables |
-| `--model` | `-m` | str | optional |  | Override the model declared in the agent definition file; when omitted the definition's own model is used |
-| `--profile` |  | str | required |  | Name of the claudewheel profile to use for authentication |
-| `--cwd` |  | str | optional |  | Working directory path for the Claude Code process to operate in; when omitted the subprocess inherits this process's directory |
-| `--footer`, `--no-footer` |  | bool | optional |  | Display cost and timing summary on stderr after completion (displayed when neither --footer nor --no-footer is passed) |
-| `--color`, `--no-color` |  | bool | optional |  | Enable ANSI colored output for terminal display and formatting (enabled, subject to TTY and NO_COLOR detection, when neither --color nor --no-color is passed) |
-
-### Arguments
-
-| Name | Type | Presence | Description |
-| --- | --- | --- | --- |
-| `definition` | str | required | Agent name or filesystem path to a .agent.json definition file |
-| `prompt` | str | required | User message prompt to send to the agent for processing |
+| `agent-definition` |  | choice | required |  | Selection (not typed as a flag). Elect exactly one of `--agent-name`, `--agent-file`. Which agent definition to load: pass --agent-name or --agent-file |
+| &nbsp;&nbsp;&nbsp;&nbsp;`--agent-name` |  | str | required |  | Elects `agent-definition` = `agent-name`. load the agent by name from the agents directory Its value: Name of the agent defined in .claudestream/agents/<name>.agent.toml |
+| &nbsp;&nbsp;&nbsp;&nbsp;`--agent-file` |  | str | required |  | Elects `agent-definition` = `agent-file`. load the agent from this file Its value: Path of an agent file named <name>.agent.toml |
+| `--var` |  | list[str] | optional |  | Template variable as key=value, filling the {key} placeholder of the agent's prompt template; repeat it once per variable |
+| `--model` | `-m` | str | optional |  | Claude model for the session (an alias such as sonnet or opus, or a full model ID); required when the agent declares no model, and refused when it declares one |
+| `--profile` |  | str | required |  | claudewheel profile the session runs under: Claude Code is started as `claudewheel profile exec --name <profile> -- <claude> ...`, which gives it the profile's environment |
+| `prompt-source` |  | choice | required |  | Selection (not typed as a flag). Elect exactly one of `--prompt`, `--prompt-from-stdin`. Where the prompt comes from: pass --prompt or --prompt-from-stdin |
+| &nbsp;&nbsp;&nbsp;&nbsp;`--prompt` |  | str | required |  | Elects `prompt-source` = `prompt`. send this flag's value as the prompt Its value: Prompt text to send |
+| &nbsp;&nbsp;&nbsp;&nbsp;`--prompt-from-stdin` |  |  | required |  | Elects `prompt-source` = `prompt-from-stdin`. read the prompt from standard input |
+| `session` |  | choice | required |  | Selection (not typed as a flag). Elect exactly one of `--new-session`, `--resume`, `--continue-session`. Which Claude Code session to use: pass --new-session, --resume, or --continue-session |
+| &nbsp;&nbsp;&nbsp;&nbsp;`--new-session` |  |  | required |  | Elects `session` = `new-session`. start a new session |
+| &nbsp;&nbsp;&nbsp;&nbsp;`--resume` |  | str | required |  | Elects `session` = `resume`. resume the session with this ID Its value: ID of the session to resume |
+| &nbsp;&nbsp;&nbsp;&nbsp;`--continue-session` |  |  | required |  | Elects `session` = `continue-session`. continue the most recent session in the working directory |
+| `--skip-permissions`, `--no-skip-permissions` |  | bool | required |  | Required either way: --skip-permissions runs Claude Code with --dangerously-skip-permissions, so no tool use is checked; --no-skip-permissions keeps Claude Code's permission checks, so tools that need permission are refused |
+| `--cwd` |  | str | optional |  | Working directory for Claude Code; when omitted, Claude Code runs in this process's working directory |
+| `--from-pr` |  | str | optional |  | GitHub pull request to load into the session, passed to Claude Code as --from-pr; when omitted, none is loaded |
+| `--claude-binary` |  | str | optional |  | Absolute path of the Claude Code executable; when omitted, `claude` is looked up on PATH |
+| `--claudewheel-binary` |  | str | optional |  | Absolute path of the claudewheel executable; when omitted, `claudewheel` is looked up on PATH |
+| `--color`, `--no-color` |  | bool | optional |  | --color colors the output and --no-color does not; when neither is passed, stdout and stderr are each colored only when they are a terminal and NO_COLOR is unset or empty |
+| `--footer`, `--no-footer` |  | bool | optional |  | --footer writes a line with the turn's duration and cost to stderr after the reply and --no-footer does not; when neither is passed, the line is written (events with --json never writes it: its stderr carries the --json document) |
 
 ## agent list
 
-List available agents from .claudestream/agents/. Scans the agents directory in the working directory (or the directory specified by --cwd) and prints a table with each agent's name, schema version, and description. Use this to discover which agents are configured before running one with 'agent run'.
+List the agents in .claudestream/agents/ as a table of name, version, and description; any file there that fails to load is an error
 
 **Effect:** read_only
 
@@ -46,28 +54,32 @@ List available agents from .claudestream/agents/. Scans the agents directory in 
 
 | Name | Short | Type | Presence | Env | Description |
 | --- | --- | --- | --- | --- | --- |
-| `--cwd` |  | str | optional |  | Working directory path to scan for agent definitions; when omitted the current directory is scanned |
+| `--cwd` |  | str | optional |  | Directory whose .claudestream/agents/ is listed; when omitted, the current directory |
 
 ## agent info
 
-Display agent definition details for a given agent name or path. Loads the .agent.json file, parses it, and prints every configured field: name, version, description, model, budget limits, sandbox policy, tool schemas, MCP server config, and stream options. Use this to inspect an agent's full configuration before invoking it.
+Load an agent definition and print every field it declares: name, version, file, description, model, prompt placeholders, tools, sandbox, budget, MCP servers, and stream options. --agent-name searches the agents directory under the current directory
 
 **Effect:** read_only
 
-### Arguments
+### Flags
 
-| Name | Type | Presence | Description |
-| --- | --- | --- | --- |
-| `name` | str | required | Agent name or filesystem path to the .agent.json definition |
+| Name | Short | Type | Presence | Env | Description |
+| --- | --- | --- | --- | --- | --- |
+| `agent-definition` |  | choice | required |  | Selection (not typed as a flag). Elect exactly one of `--agent-name`, `--agent-file`. Which agent definition to load: pass --agent-name or --agent-file |
+| &nbsp;&nbsp;&nbsp;&nbsp;`--agent-name` |  | str | required |  | Elects `agent-definition` = `agent-name`. load the agent by name from the agents directory Its value: Name of the agent defined in .claudestream/agents/<name>.agent.toml |
+| &nbsp;&nbsp;&nbsp;&nbsp;`--agent-file` |  | str | required |  | Elects `agent-definition` = `agent-file`. load the agent from this file Its value: Path of an agent file named <name>.agent.toml |
 
 ## agent validate
 
-Validate an agent definition by loading and checking its .agent.json file for structural and semantic correctness. Verifies that budget values are non-negative, the prompt template is non-empty, tool schemas are well-formed, and required fields are present. Reports specific errors on failure or prints a success confirmation.
+Load an agent definition, checking it as agent run would, and print its name and version; every problem the file has is reported and exits 1. --agent-name searches the agents directory under the current directory
 
 **Effect:** read_only
 
-### Arguments
+### Flags
 
-| Name | Type | Presence | Description |
-| --- | --- | --- | --- |
-| `name` | str | required | Agent name or filesystem path to the .agent.json definition |
+| Name | Short | Type | Presence | Env | Description |
+| --- | --- | --- | --- | --- | --- |
+| `agent-definition` |  | choice | required |  | Selection (not typed as a flag). Elect exactly one of `--agent-name`, `--agent-file`. Which agent definition to load: pass --agent-name or --agent-file |
+| &nbsp;&nbsp;&nbsp;&nbsp;`--agent-name` |  | str | required |  | Elects `agent-definition` = `agent-name`. load the agent by name from the agents directory Its value: Name of the agent defined in .claudestream/agents/<name>.agent.toml |
+| &nbsp;&nbsp;&nbsp;&nbsp;`--agent-file` |  | str | required |  | Elects `agent-definition` = `agent-file`. load the agent from this file Its value: Path of an agent file named <name>.agent.toml |

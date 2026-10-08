@@ -1,11 +1,15 @@
 {
   "version": "0.15.3",
-  "description": "Drive Claude Code from Python: run it as a subprocess and read its output as typed events, with async and sync sessions, sandbox policies, and tools you define in Python",
+  "description": "Drive Claude Code from Go: run it as a subprocess under a claudewheel profile and read its stream-json output as typed events, with sandboxed permissions, budget thresholds, tools served over MCP, agent definitions, and a command line",
   "repo": "https://github.com/stricttools/claudestream",
   "source": [
     {
-      "path": "claudestream",
-      "language": "python"
+      "path": ".",
+      "language": "go"
+    },
+    {
+      "path": "agent",
+      "language": "go"
     }
   ],
   "docs": ".strictmetadata/docs",
@@ -22,13 +26,9 @@
       "default": true
     }
   ],
-  "directives": {
-    "table-events": ".strictmetadata/docs/_directives/event_catalog.py"
-  },
   "gen": {
     "exclude": [
-      "claudestream",
-      "claudestream._agent_schema"
+      "*"
     ]
   },
   "root_files": [

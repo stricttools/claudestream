@@ -1,6 +1,6 @@
 +++
 title = "API Reference"
-description = "API reference index for claudestream covering 11 modules"
+description = "API reference index covering 0 modules"
 generated = true
 seeded = true
 nav_group = "API Reference"
@@ -10,14 +10,3 @@ nav_order = 90
 
 # API Reference
 
-- [claudestream._agent](../claudestream-_agent/)
-- [claudestream._async_session](../claudestream-_async_session/)
-- [claudestream._cli](../claudestream-_cli/)
-- [claudestream._color](../claudestream-_color/)
-- [claudestream._options](../claudestream-_options/)
-- [claudestream._process](../claudestream-_process/)
-- [claudestream._protocol](../claudestream-_protocol/)
-- [claudestream._sync_session](../claudestream-_sync_session/)
-- [claudestream._tools](../claudestream-_tools/)
-- [claudestream.messages](../claudestream-messages/)
-- [claudestream.policy](../claudestream-policy/)

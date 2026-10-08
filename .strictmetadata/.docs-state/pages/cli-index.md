@@ -10,23 +10,21 @@ nav_order = 91
 
 # claudestream CLI Reference
 
-Drive Claude Code from Python: run it as a subprocess and read its output as typed events, with async and sync sessions, sandbox policies, and tools you define in Python
+Drive Claude Code from the command line: start a session under a claudewheel profile, send one prompt, and print the reply as final text, live text, a detailed rendering, or the raw stream-json lines; run agent definitions; and check the installation
 
 Version: :-: var key="project.version"
 
 ## Commands
 
-- [send](../cli-send/) -- Send a prompt to Claude and display the complete response with events
-- [stream](../cli-stream/) -- Stream a prompt with real-time incremental token-by-token output to stdout
-- [events](../cli-events/) -- Debug mode: display all raw JSON protocol events from the subprocess
-- [repl](../cli-repl/) -- Start an interactive multi-turn read-eval-print loop session with Claude
-- [ask](../cli-ask/) -- Send a prompt to Claude and print only the final response text
-- [doctor](../cli-doctor/) -- Check claudestream environment health: binary, version, and profile
-- [config](../cli-config/) -- Show resolved configuration including binary path and version
+- [ask](../cli-ask/) -- Send one prompt to Claude Code and print only the reply's final text on stdout; with --json, the reply and its metadata are the document's payload. A turn that Claude Code ends with an error exits 1 with the result text on stderr
+- [stream](../cli-stream/) -- Send one prompt to Claude Code and write the reply's text to stdout as it arrives, with a one-line marker on stderr for each thinking block, tool call, tool result, and notice. A turn that Claude Code ends with an error exits 1 with the result text on stderr
+- [send](../cli-send/) -- Send one prompt to Claude Code and render the whole turn on stdout: the reply's text as it arrives, thinking, each tool call with its input as JSON, and each tool result; notices go to stderr. A turn that Claude Code ends with an error exits 1 with the result text on stderr
+- [events](../cli-events/) -- Send one prompt to Claude Code and copy every line Claude Code writes to its stdout (stream-json) to stdout verbatim, for debugging the protocol. A turn that Claude Code ends with an error exits 1 with the result text on stderr
+- [doctor](../cli-doctor/) -- Check what a session needs: the claude path and its version against the minimum 2.0.0 (`claude -v`, within 2s), and the claudewheel path; with --profile, also run `claudewheel profile exec --name <profile> -- <claude> -v` (within 10s). Prints one [ok] or [FAIL] line per check and exits 1 when any check fails
 
 ## Command Groups
 
-- [agent](../cli-agent/) -- Manage and run agents defined in .agent.json files. Agent definitions declare a model, prompt template, allowed tools with input schemas, sandbox permissions, and budget limits (cost, turns, tokens). Use subcommands to validate configurations, run agents against prompts, and inspect metadata.
+- [agent](../cli-agent/) -- Run and inspect agent definitions: strict TOML files at .claudestream/agents/<name>.agent.toml (format_version = 2) that declare a prompt template with {variable} placeholders and, optionally, a model, tools, a sandbox, budget thresholds, MCP servers, and stream options
 
 ## Framework flags
 
@@ -38,3 +36,11 @@ These flags are owned by the strictcli framework, not by the app. No command may
 | `--approve-consequential` | Skips the confirmation prompt a consequential command shows before it runs. |
 | `--quiet` | Hides informational output. Warnings, errors, structured data and the dry-run log are never suppressed. |
 | `--verbose` | Shows debug output. `--quiet` wins when both are passed. |
+
+## Infrastructure
+
+### Handshake variables
+
+| Env var | Description |
+| --- | --- |
+| `NO_COLOR` | When set to a non-empty value and neither --color nor --no-color is passed, output is not colored (https://no-color.org) |
