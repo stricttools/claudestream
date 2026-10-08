@@ -1,145 +1,69 @@
 {
   "_hash_version": 3,
-  "en/agents-guide.md": {
-    "content": "4a522b62821b19c84be215f254433104daf192c0ebc10aba13c122e15ac21483",
-    "description": "e9756454852b897fc213df16c066de9ff0780bc1a86550fcf9fc4b6c9f7d4510",
-    "source_docstring": "34be0be68993ae7458b011dd06147a5e5cea644398fedfcf332b7edb68777632"
+  "en/agent.md": {
+    "content": "974de9567ba4670c63f908499e5159169219714eef5c688af62c0ab50111d41f",
+    "description": "1a6f95f2e369cc2e8f1393df63dc696f4ebdafbf7f235b7b1a9a17303c9888de",
+    "source_docstring": "ec14e21e6aa702ad21f0bc7d20cce7c28b2a756cce996fe29a1eecefed63cf87"
   },
-  "en/claudestream-_agent.md": {
-    "content": "9dfd6e87698290f23e489100275a401ac7ccc3289c890038feee5046eaf7f44a",
-    "description": "448cb117d26e31d27b070b3e4493d368e74b958ec92c5d131b3ae80154b4bbd3",
-    "source_docstring": "448cb117d26e31d27b070b3e4493d368e74b958ec92c5d131b3ae80154b4bbd3"
+  "en/agents-guide.md": {
+    "content": "9004a3568e43643e40ae4e9c93da3f8d712823a05717d1b62f1a5ea9b12d3bfd",
+    "description": "cee95a93462fb09c972582be39717a452602285c6cffb803ceb6dbfb84f9853f"
   },
   "en/claudestream-_agent_schema.md": {
     "content": "57d714a49ea2cf164316905b06200702ddb3ad7ebb8f2d195ccf2ecaee486fd5",
     "description": "429eb0dff867178a8bfb3d0b8393c6bfb2f8203b7b9e26825566b8de14cd7c4d",
     "seed_hash": "429eb0dff867178a8bfb3d0b8393c6bfb2f8203b7b9e26825566b8de14cd7c4d"
   },
-  "en/claudestream-_async_session.md": {
-    "content": "f4d94422ceb813179bc7476c2934170ee447632090a4c050df420a2adbb4bdf4",
-    "description": "eb7292da18c96240dd1e11507331026261fd5c6567f9f786aa480ac0a8acadb8",
-    "source_docstring": "eb7292da18c96240dd1e11507331026261fd5c6567f9f786aa480ac0a8acadb8"
-  },
-  "en/claudestream-_cli.md": {
-    "content": "1ebf0720bb0e67a7f13b3a04e130656894a4127defa755c4892cb9394e789a22",
-    "description": "23545c3179ca6230f161364ace3426ed96a2b257ab608c59082a591af088c1ea",
-    "source_docstring": "23545c3179ca6230f161364ace3426ed96a2b257ab608c59082a591af088c1ea"
-  },
-  "en/claudestream-_color.md": {
-    "content": "212dc9b973d80e28b7d4062b33943ed50856f092d3dbbdd4ab01e5ff9bba3f37",
-    "description": "272392e6ec3ac09809bcebe891c06be2e5ca30907f4ca0a7db3fe7160ac7b7d9",
-    "source_docstring": "272392e6ec3ac09809bcebe891c06be2e5ca30907f4ca0a7db3fe7160ac7b7d9"
-  },
-  "en/claudestream-_options.md": {
-    "content": "3fc2234fed7c13babb4e869405445174bca774ef5fcbb90bb01ef47821a24521",
-    "description": "21aad6e0c71d20c39ab7e14b5c0c0b6e1d1faff4d644c974c5c1ec758e03457f",
-    "source_docstring": "406c6337ab81aa66023b81efc2336c1ac46aa6b15311ebf52efe778a0a2ddd7b"
-  },
-  "en/claudestream-_process.md": {
-    "content": "f8224474549628d244b61d043665bd85f665067f3b43e01dd136fcf8ee5b6ce6",
-    "description": "500483b85ccd6f9317310de5bc70af5f37848904f43a01984915ee19f48d41b4",
-    "source_docstring": "500483b85ccd6f9317310de5bc70af5f37848904f43a01984915ee19f48d41b4"
-  },
-  "en/claudestream-_protocol.md": {
-    "content": "4fe6c5f3025fc53394b4422b982c069ed369d44161d3b49ca8f9509a7b02f629",
-    "description": "413dc8559243c1deb1cf0e6861cb1f6578c079ef224dadf0ea4c260eca2c8f68",
-    "source_docstring": "413dc8559243c1deb1cf0e6861cb1f6578c079ef224dadf0ea4c260eca2c8f68"
-  },
-  "en/claudestream-_sync_session.md": {
-    "content": "aeb675033f60b57d4e0cdd86a889381e880d4f03e09039fd3f643a1c8963e79b",
-    "description": "e36a2c64066eae5739ce8bb583c5362b4c34db941c154665334db2cd5f5e3a87",
-    "source_docstring": "e36a2c64066eae5739ce8bb583c5362b4c34db941c154665334db2cd5f5e3a87"
-  },
-  "en/claudestream-_tools.md": {
-    "content": "2aa00e9973aa84e5a7749ec30915e8944d041f8268e2639faedddcc11b233eda",
-    "description": "74c78248ef2b1cbdf16a0dcd3b59cc732a3b323e09f177c7f9923c33a0a614a5",
-    "source_docstring": "74c78248ef2b1cbdf16a0dcd3b59cc732a3b323e09f177c7f9923c33a0a614a5"
-  },
   "en/claudestream-events.md": {
     "content": "f46db47105ac22b2e1b61f28a4b5668c0b935a92a3aaec30b54eb62af14ad32e",
     "description": "7f97513fb5ce08f7fc07d06685cb8bdb519d3ff59626540543e191c7f3514f26",
     "source_docstring": "7f97513fb5ce08f7fc07d06685cb8bdb519d3ff59626540543e191c7f3514f26"
   },
-  "en/claudestream-messages.md": {
-    "content": "5b11f9f6cb7b5acd368ed08148911292486de118d4594d13c6806b258f9638a5",
-    "description": "5a0fd6fa966c1d03b5ed0e3622593ffb1b1563e522077810965b1c51b1ee2698",
-    "source_docstring": "5a0fd6fa966c1d03b5ed0e3622593ffb1b1563e522077810965b1c51b1ee2698"
-  },
-  "en/claudestream-policy.md": {
-    "content": "a3d641849dbd8fd73a4a364472516a7b697c5cb30a3df2788cb319529aaafc98",
-    "description": "405633d451d57cfd84c757d434e3752de564eed03e1db825693cdfc6b3a80f12",
-    "source_docstring": "405633d451d57cfd84c757d434e3752de564eed03e1db825693cdfc6b3a80f12"
-  },
   "en/claudestream.md": {
-    "content": "c93d9b34c66568dbdccfa3b37607b9d4ce2913b0f3507cc95e2b61df657f09fe",
-    "description": "476ea6a3c3c6f7638e38b77644aaa164f78b479b0ec54106a68f6b524237ec6a",
-    "source_docstring": "9503de0380613443912885f9dca458b7994182d6635b113321dfb05cead2859c"
+    "content": "9295c92663dd8fb7dc4b241024299f6f0b2a2a5f690178e08923b0e6744ba7e1",
+    "description": "d78884aa55e33a5428f9653e04d153e4289f8c45849098419a50c352db06efe8",
+    "source_docstring": "e7341f75028f85dec67779a175d5c54c123f014f8fa24bd864e8c70d5226d26c"
   },
   "en/cli-agent.md": {
-    "content": "53e4897aa1e4fc1971b5f674ee300b7e483fd413148dbb3d475e3b9fe32c9e6b",
-    "description": "27094f9d4616558c660a345f78cd042d18b0a3f877f24797b95c427fcb72bb98",
-    "schema_hash": "f67e50c3ec78e3df044826c0d5bd1b8e869e6aa84b515abe83e14b8cfc6b3dff",
-    "seed_hash": "27094f9d4616558c660a345f78cd042d18b0a3f877f24797b95c427fcb72bb98"
+    "content": "b90c5b14e7f3e02f40a281cf02f09eb06f128d26d68040c8e8446eea9b60efda",
+    "description": "c0e7946e26a0018ead76725d460c230a4aac103d6cac76179a49e651f3526fae"
   },
   "en/cli-ask.md": {
-    "content": "5a496545c4144e79e39fbba7c0b822e39963811fbd42bc4d248f0c284767479d",
-    "description": "4374b454bfc07261b4b8d3247a88040d6f3f051d9a57be4b4f51b10f215fd05e",
-    "schema_hash": "7060d9c58189dd0d394c69dd0dad3e3c3ac68deceacdfdc45ce51d13dca13c26",
-    "seed_hash": "4374b454bfc07261b4b8d3247a88040d6f3f051d9a57be4b4f51b10f215fd05e"
-  },
-  "en/cli-config.md": {
-    "content": "52af6046f668739a8549a11b95859c8a0d8e0e0f45290bde260698c8d2e85175",
-    "description": "8764739cd0f0ae085b619feea5f41a0cc66717f6b97680f555e892d7ba9c4d27",
-    "schema_hash": "50c6ef39bc0aa2d7e84a3611b73140200ba7d98f075a66d7cd66006ab948771d",
-    "seed_hash": "8764739cd0f0ae085b619feea5f41a0cc66717f6b97680f555e892d7ba9c4d27"
+    "content": "71b02f55760d6e9e0309393f7253838006af8a6a93ab6c82ab8ae8bfd9a1c0a9",
+    "description": "6c4257c52fdc23931219b994e6a4608534b23481efa7f297725cd5b8da04383e"
   },
   "en/cli-doctor.md": {
-    "content": "13e9b2be5f92fbb01117e7951bcc068bf9a6e5c33df7ca5eb7908219a2a87083",
-    "description": "a0ac710c30390f4108a1462c2e943a955754826d05db170508898e38f9424f14",
-    "schema_hash": "a6fd0f063ee06ac90e5c5179675ce266cdc0d2067b390d61722670a62c0e770b",
-    "seed_hash": "a0ac710c30390f4108a1462c2e943a955754826d05db170508898e38f9424f14"
+    "content": "efcc000b6e11bd1f9c729fafac07eb987d2bb0089eb12a10d49f2b5acd063e94",
+    "description": "b271cb42deb1dbec0efe73e163a12de36e5a3514411828a085fc72169011c6b8"
   },
   "en/cli-events.md": {
-    "content": "24a0a9f644d7aba2b10105ab78340f2ff7161d666d2202e4e91e68e18050ef05",
-    "description": "1804e4e3606197ea1503458952b74e5db31fbcaa7a59290480a449c897d7372a",
-    "schema_hash": "61606c6fef505fba29322b7546a905120ef277a2c8f5d92a371d13489257a334",
-    "seed_hash": "1804e4e3606197ea1503458952b74e5db31fbcaa7a59290480a449c897d7372a"
+    "content": "e3768c3bf383f0887041219ceb49f6b0d43d2b6f71a179e585649841d7c0639d",
+    "description": "43b42a2997f02e063d7fc4e7f040b3da05b35e9ae6060ef198bd8a7041fbb2da"
   },
   "en/cli-index.md": {
-    "content": "44a837ef915bdd7e51f0dfa4571d606da6af0a8b647d79b8f7a41b061675a5d4",
+    "content": "bf2b6cadfe9f4820158072cdcd0a9d0be8b98263fce9496cb31cb55c4c6f8c45",
     "description": "160dac3a666212f735378ede9e70b41f7bf7fa869de54000440ae80cc6347e6c",
     "seed_hash": "160dac3a666212f735378ede9e70b41f7bf7fa869de54000440ae80cc6347e6c"
   },
-  "en/cli-repl.md": {
-    "content": "5e52bd041ff87c46693fcb5eb46b24d7f83abf0b38aa0e464be04d92e9da8103",
-    "description": "eeced3d84792a66f6fef6bf1ca8eee7b9ecf87ccba86865630b00612e848f564",
-    "schema_hash": "3f1510e904eda42057c95614b01c4fb8f45f05b173dcf106f4d108273a69d4d3",
-    "seed_hash": "eeced3d84792a66f6fef6bf1ca8eee7b9ecf87ccba86865630b00612e848f564"
-  },
   "en/cli-send.md": {
-    "content": "458869fdfb370e8a6328a55a607621c8fc307b669d7125b35cc5c2f5a9e63e95",
-    "description": "92ced5b84be552504d7694f18382865e2b3361fe593a2c4f64aa36228bb84386",
-    "schema_hash": "a227dba26004866ff9534090e31f03fa5f2e6483009ed7d56ac509a9da3ee3ba",
-    "seed_hash": "92ced5b84be552504d7694f18382865e2b3361fe593a2c4f64aa36228bb84386"
+    "content": "ec64d0f4d3693c6006f1b781b423f19760ab3e78d1d98a7163e7b735c29c689e",
+    "description": "410a29e5d1d3c1e0cf641c1840773413464668c20fb35c81c6377272931d5c71"
   },
   "en/cli-stream.md": {
-    "content": "6c84bc7745599b19a62fa45fe40586a1e27d87d39985b83722796d8ff0eceb7c",
-    "description": "d563740bbfdfeb4f28a780df202983a6cc90a69d77752bbd28e7ec684b57660a",
-    "schema_hash": "17094a4fe3cd6b727e3f855891086f3aea8b06a49e16db5517aa35cae1278e12",
-    "seed_hash": "d563740bbfdfeb4f28a780df202983a6cc90a69d77752bbd28e7ec684b57660a"
+    "content": "5bcc95baa10eae01fc56663743094998c74a0113ed018e66f33f6cedcb65544a",
+    "description": "d9b6e54ddb23d5361768bcf2d3c43596c908a11191828438e40c5d2e35b4e41b"
   },
   "en/gen-index.md": {
-    "content": "f29a67f79ede5f1d16ffd878362962145e8c5dd1d49d9e9a465cd168c8174498",
-    "description": "bc10b60455c659d9d84be2928d0e09d82d173b4ff9337ad5572314cb9aab755e",
-    "seed_hash": "bc10b60455c659d9d84be2928d0e09d82d173b4ff9337ad5572314cb9aab755e"
+    "content": "77b26abe69da3a05549e49ce64a424607918ca7cfb8913353870f1d7ae523870",
+    "description": "69b33c4c200853afacbde3b4578f326f00d27767a14f974e03e2ee916f28855f",
+    "seed_hash": "69b33c4c200853afacbde3b4578f326f00d27767a14f974e03e2ee916f28855f"
   },
   "en/guide.md": {
-    "content": "ab711618e8fc6583629457faca6b7dc5f2cb42891b81764d23fec15adb712ef0",
-    "description": "54395ad89be2afbc12a72190b59ff3522cfd7f97eb41b40236055480c561576b",
-    "source_docstring": "eb76765087ebc41967861c1aff873ab914be5434b6b4adbfe21beb9bf2a2e07e"
+    "content": "e903f66c78bc5319be09b57c844f480d5d525174ad0882e92aff0952656b08ae",
+    "description": "eae7cb83d676e4960164518629746da2a127ed4567bd9bca0444c090a468b106"
   },
   "en/index.md": {
-    "content": "64321bef436daeb3c5ffcce4b7631473e2722762e0648d4d092c6ae28f765b6b",
-    "description": "476ea6a3c3c6f7638e38b77644aaa164f78b479b0ec54106a68f6b524237ec6a"
+    "content": "1a6b92ae69d523ec3cc59e8c8109db243b8e5a24fd229b24bc1367db1e37dd3d",
+    "description": "e2f41375c1bb12d1f6f5be0eb699150e843e5ad1e64534c7cbaaa7d7e41df5d2"
   }
 }
