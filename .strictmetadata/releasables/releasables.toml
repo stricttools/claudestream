@@ -15,18 +15,12 @@ publish_mode = "ci"
 path = "."
 name = "root"
 releasable = "claudestream"
-targets = [{ name = "pypi" }, { name = "npm" }]
+targets = [{ name = "go" }]
 
 [[members.pipelines]]
-name = "npm"
-type = "npm"
-target = "npm"
+name = "go"
+type = "go"
+target = "go"
 local = false
-artifact = "package"
-
-[[members.pipelines]]
-name = "pypi"
-type = "pypi"
-target = "pypi"
-local = false
-artifact = "package"
+artifact = "binary"
+install_paths = ["./cmd/claudestream"]
