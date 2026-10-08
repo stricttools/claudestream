@@ -9,5 +9,9 @@ word = "claudewheel"
 meaning = "A separate tool that manages Claude Code profiles (config directories with credentials and settings); claudestream's --profile flag selects one."
 
 [[accepted]]
+word = "goroutine"
+meaning = "A lightweight thread of execution managed by the Go runtime"
+
+[[accepted]]
 word = "strictspec"
 meaning = "The schema language and validator used to define and check the agent definition document format."
