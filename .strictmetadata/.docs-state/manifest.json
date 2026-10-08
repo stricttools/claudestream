@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "name": "claudestream",
+  "name": "release-checkout",
   "slug": "claudestream",
   "version": "0.15.3",
   "description": "Drive Claude Code from Go: run it as a subprocess under a claudewheel profile and read its stream-json output as typed events, with sandboxed permissions, budget thresholds, tools served over MCP, agent definitions, and a command line",
@@ -995,7 +995,7 @@
     }
   ],
   "posts": [],
-  "last_gen": "2026-10-08T15:50:25.451819+00:00",
+  "last_gen": "2026-10-08T16:14:42.271941+00:00",
   "theme": "minimal",
   "vocabulary": {
     "accepted": [
